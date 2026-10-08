@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Panel</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #080b14;
+            color: #fff;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 230px;
+            height: 100vh;
+            background: #101522;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            padding: 0 10px;
+        }
+
+        .logo span {
+            color: #4f8cff;
+        }
+
+        .nav a {
+            display: block;
+            padding: 13px 15px;
+            margin: 7px 0;
+            border-radius: 10px;
+            color: #aab3c5;
+            text-decoration: none;
+        }
+
+        .nav a:hover,
+        .nav .active {
+            background: #1c2944;
+            color: #fff;
+        }
+
+        .main {
+            margin-left: 230px;
+            padding: 30px;
+        }
+
+        .top {
+            margin-bottom: 25px;
+        }
+
+        .top h1 {
+            margin-bottom: 5px;
+        }
+
+        .top p {
+            color: #8d98ad;
+        }
+
+        .card {
+            background: #101522;
+            border: 1px solid #1b2436;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .label {
+            color: #8d98ad;
+            font-size: 14px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px 10px;
+            text-align: left;
+            border-bottom: 1px solid #1c2434;
+        }
+
+        th {
+            color: #8d98ad;
+            font-size: 13px;
+        }
+
+        td {
+            white-space: nowrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .admin {
+            background: #292044;
+            color: #b99cff;
+        }
+
+        .user {
+            background: #17283c;
+            color: #7db7ff;
+        }
+
+        .active {
+            background: #102b1b;
+            color: #4ade80;
+        }
+
+        .inactive {
+            background: #351b20;
+            color: #ff7185;
+        }
+
+        button {
+            border: 0;
+            padding: 8px 11px;
+            border-radius: 8px;
+            background: #1c2944;
+            color: white;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .delete {
+            background: #351b20;
+            color: #ff7185;
+        }
+
+        .owner {
+            color: #b99cff;
+            font-weight: bold;
+        }
+
+        .message {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background: #17283c;
+            color: #7db7ff;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #7db7ff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">
+        OWNER<span>PANEL</span>
+    </div>
+
+    <nav class="nav">
+        <a href="/admin/" class="active">👑 Overview</a>
+        <a href="/admin/">👥 Users</a>
+        <a href="#">🔑 API Keys</a>
+        <a href="#">📊 Statistics</a>
+        <a href="#">📢 Announcements</a>
+        <a href="#">⚙️ Settings</a>
+    </nav>
+
+</aside>
+
+<main class="main">
+
+    <div class="top">
+        <h1>👑 Owner Panel</h1>
+        <p>Manage your Python Panel users and system.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="stats">
+
+        <div class="card">
+            <div class="label">Total Users</div>
+            <div class="stat-number">{{ users|length }}</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Administrators</div>
+            <div class="stat-number">
+                {{ users|selectattr("is_admin")|list|length }}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="label">Active Users</div>
+            <div class="stat-number">
+                {{ users|selectattr("is_active_user")|list|length }}
+            </div>
+        </div>
+
+    </section>
+
+    <section class="card">
+
+        <h2>👥 Users</h2>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Plan</th>
+                        <th>Expires</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for user in users %}
+
+                    <tr>
+
+                        <td>#{{ user.id }}</td>
+
+                        <td>
+                            <strong>{{ user.username }}</strong>
+                        </td>
+
+                        <td>{{ user.email }}</td>
+
+                        <td>
+                            {% if user.is_admin %}
+                                <span class="badge admin">ADMIN</span>
+                            {% else %}
+                                <span class="badge user">USER</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if user.is_active_user %}
+                                <span class="badge active">ACTIVE</span>
+                            {% else %}
+                                <span class="badge inactive">DISABLED</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="badge user">{{ user.plan }}</span>
+                        </td>
+
+                        <td>
+                            {% if user.expires_at %}
+                                {{ user.expires_at.strftime('%d/%m/%Y %H:%M') }}
+                            {% else %}
+                                <span style="color:#8d98ad;">Never</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ user.created_at.strftime('%d/%m/%Y') }}
+                        </td>
+
+                        <td>
+
+                            {% if user.id == current_user.id %}
+
+                                <span class="owner">👑 OWNER</span>
+
+                            {% else %}
+
+                                <a href="/admin/user/{{ user.id }}/edit">
+                                    <button type="button">Edit</button>
+                                </a>
+
+                                <form
+                                    method="POST"
+                                    action="/admin/user/{{ user.id }}/toggle"
+                                    style="display:inline;"
+                                >
+                                    <button type="submit">
+                                        {% if user.is_active_user %}
+                                            Disable
+                                        {% else %}
+                                            Activate
+                                        {% endif %}
+                                    </button>
+                                </form>
+
+                                <form
+                                    method="POST"
+                                    action="/admin/user/{{ user.id }}/delete"
+                                    style="display:inline;"
+                                    onsubmit="return confirm('Delete {{ user.username }} permanently?');"
+                                >
+                                    <button type="submit" class="delete">
+                                        Delete
+                                    </button>
+                                </form>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="7">No users found.</td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <a class="back" href="/">
+        ← Back to Dashboard
+    </a>
+
+</main>
+
+</body>
+</html>

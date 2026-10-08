@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit User | Owner Panel</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #080b14;
+            color: white;
+        }
+
+        .main {
+            max-width: 650px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .card {
+            background: #101522;
+            border: 1px solid #1b2436;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .subtitle {
+            color: #8d98ad;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin: 18px 0 7px;
+            color: #aab3c5;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #27324a;
+            border-radius: 10px;
+            background: #080b14;
+            color: white;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #4f8cff;
+        }
+
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+            color: #aab3c5;
+        }
+
+        .check input {
+            width: 18px;
+            height: 18px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            border: 0;
+            border-radius: 10px;
+            background: #4f8cff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3b73d9;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #7db7ff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="main">
+
+    <div class="card">
+
+        <h1>✏️ Edit User</h1>
+
+        <p class="subtitle">
+            Editing: <strong>{{ user.username }}</strong>
+        </p>
+
+        <form method="POST">
+
+            <label>Username</label>
+
+            <input
+                type="text"
+                name="username"
+                value="{{ user.username }}"
+                required
+            >
+
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                name="email"
+                value="{{ user.email }}"
+                required
+            >
+
+
+            <label>Expiration Date</label>
+
+            <input
+                type="datetime-local"
+                name="expires_at"
+                value="{% if user.expires_at %}{{ user.expires_at.strftime('%Y-%m-%dT%H:%M') }}{% endif %}"
+            >
+
+
+            <label>Plan</label>
+
+            <select
+                name="plan"
+                style="width:100%; padding:13px; border:1px solid #27324a; border-radius:10px; background:#080b14; color:white; outline:none;"
+            >
+                <option value="FREE" {% if user.plan == "FREE" %}selected{% endif %}>FREE</option>
+                <option value="PREMIUM" {% if user.plan == "PREMIUM" %}selected{% endif %}>PREMIUM</option>
+                <option value="VIP" {% if user.plan == "VIP" %}selected{% endif %}>VIP</option>
+                <option value="OWNER" {% if user.plan == "OWNER" %}selected{% endif %}>OWNER</option>
+            </select>
+
+
+            <label>New Password</label>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Leave blank to keep current password"
+            >
+
+
+            <label class="check">
+                <input
+                    type="checkbox"
+                    name="is_admin"
+                    {% if user.is_admin %}checked{% endif %}
+                >
+                Administrator
+            </label>
+
+
+            <label class="check">
+                <input
+                    type="checkbox"
+                    name="is_active"
+                    {% if user.is_active_user %}checked{% endif %}
+                >
+                Account Active
+            </label>
+
+
+            <button type="submit">
+                Save Changes
+            </button>
+
+        </form>
+
+        <a class="back" href="/admin/">
+            ← Back to Owner Panel
+        </a>
+
+    </div>
+
+</main>
+
+</body>
+</html>

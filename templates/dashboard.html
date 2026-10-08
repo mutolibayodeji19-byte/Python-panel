@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Python Panel</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #080b14;
+            color: #fff;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 230px;
+            height: 100vh;
+            background: #101522;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            padding: 0 10px;
+        }
+
+        .logo span {
+            color: #4f8cff;
+        }
+
+        .nav a {
+            display: block;
+            padding: 13px 15px;
+            margin: 7px 0;
+            border-radius: 10px;
+            color: #aab3c5;
+            text-decoration: none;
+        }
+
+        .nav a:hover,
+        .nav .active {
+            background: #1c2944;
+            color: #fff;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout a {
+            display: block;
+            padding: 13px;
+            text-align: center;
+            border-radius: 10px;
+            background: #24171c;
+            color: #ff7185;
+            text-decoration: none;
+        }
+
+        .main {
+            margin-left: 230px;
+            padding: 30px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .top h1 {
+            margin: 0;
+        }
+
+        .status {
+            padding: 9px 14px;
+            border-radius: 20px;
+            background: #102b1b;
+            color: #4ade80;
+            font-size: 13px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: #101522;
+            border: 1px solid #1b2436;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .card .label {
+            color: #8d98ad;
+            font-size: 14px;
+        }
+
+        .card .value {
+            font-size: 27px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .content {
+            margin-top: 22px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            background: #101522;
+            border: 1px solid #1b2436;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+        }
+
+        .activity {
+            padding: 13px 0;
+            border-bottom: 1px solid #1c2434;
+            color: #aab3c5;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .logout {
+                position: static;
+                margin-top: 20px;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .top {
+                align-items: flex-start;
+                gap: 15px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">
+        PYTHON<span>PANEL</span>
+    </div>
+
+    <nav class="nav">
+        <a href="/" class="active">🏠 Dashboard</a>
+        <a href="#">👤 Profile</a>
+        <a href="#">📦 Services</a>
+        <a href="#">🔑 API Keys</a>
+        <a href="#">📊 Statistics</a>
+        <a href="#">⚙️ Settings</a>
+    </nav>
+
+    <div class="logout">
+        <a href="/logout">🚪 Logout</a>
+    </div>
+
+</aside>
+
+<main class="main">
+
+    <div class="top">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Welcome back, {{ user.username }}</p>
+        </div>
+
+        <div class="status">
+            ● Account Active
+        </div>
+    </div>
+
+    <section class="cards">
+
+        <div class="card">
+            <div class="label">User ID</div>
+            <div class="value">#{{ user.id }}</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Account</div>
+            <div class="value">
+                {% if user.is_admin %}
+                    Admin
+                {% else %}
+                    User
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="label">Status</div>
+            <div class="value">Active</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Member Since</div>
+            <div class="value">
+                {{ user.created_at.strftime('%d/%m/%y') }}
+            </div>
+        </div>
+
+    </section>
+
+    <section class="content">
+
+        <div class="panel">
+            <h2>Recent Activity</h2>
+
+            <div class="activity">
+                🟢 Account created
+            </div>
+
+            <div class="activity">
+                🔐 Authentication system active
+            </div>
+
+            <div class="activity">
+                🌐 Dashboard accessed
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Account</h2>
+
+            <p><strong>Username:</strong> {{ user.username }}</p>
+
+            <p><strong>Email:</strong> {{ user.email }}</p>
+
+            <p>
+                <strong>Role:</strong>
+                {% if user.is_admin %}
+                    Administrator 👑
+                {% else %}
+                    Standard User
+                {% endif %}
+            </p>
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

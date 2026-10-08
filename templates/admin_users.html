@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Users | Python Panel</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 25px;
+            background: #080b14;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        a {
+            color: #4f8cff;
+            text-decoration: none;
+        }
+
+        .table {
+            width: 100%;
+            overflow-x: auto;
+            background: #101522;
+            border: 1px solid #1b2436;
+            border-radius: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #1c2434;
+        }
+
+        th {
+            color: #8d98ad;
+        }
+
+        .admin {
+            color: #4ade80;
+        }
+
+        .user {
+            color: #aab3c5;
+        }
+
+        .active {
+            color: #4ade80;
+        }
+
+        .inactive {
+            color: #ff7185;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="top">
+    <div>
+        <h1>👥 User Management</h1>
+        <p>Manage registered accounts.</p>
+    </div>
+
+    <a href="/admin/">← Admin Dashboard</a>
+</div>
+
+<div class="table">
+
+<table>
+
+<thead>
+<tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Role</th>
+    <th>Status</th>
+    <th>Created</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for user in users %}
+
+<tr>
+    <td>#{{ user.id }}</td>
+
+    <td>
+        {{ user.username }}
+    </td>
+
+    <td>
+        {{ user.email }}
+    </td>
+
+    <td>
+        {% if user.is_admin %}
+            <span class="admin">👑 Admin</span>
+        {% else %}
+            <span class="user">User</span>
+        {% endif %}
+    </td>
+
+    <td>
+        {% if user.is_active_user %}
+            <span class="active">● Active</span>
+        {% else %}
+            <span class="inactive">● Disabled</span>
+        {% endif %}
+    </td>
+
+    <td>
+        {{ user.created_at.strftime('%d/%m/%Y') }}
+    </td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</body>
+</html>
