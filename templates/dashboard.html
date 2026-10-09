@@ -148,6 +148,59 @@
             .top { align-items: flex-start; flex-direction: column; }
             .main { padding: 15px; }
         }
+
+        /* PRIME ZENITH ANALYTICS */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 18px;
+        }
+        .chart-bars {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 12px;
+            align-items: end;
+            min-height: 170px;
+            margin-top: 20px;
+        }
+        .chart-day {
+            min-width: 0;
+            text-align: center;
+            color: #8d98ad;
+            font-size: 12px;
+        }
+        .bar-track {
+            height: 115px;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .bar {
+            width: min(30px, 80%);
+            min-height: 3px;
+            background: #4f8cff;
+            border-radius: 7px 7px 2px 2px;
+        }
+        .chart-number { color: #fff; font-weight: bold; margin-bottom: 5px; }
+        .table-wrap { overflow-x: auto; width: 100%; }
+        .stats-table { width: 100%; border-collapse: collapse; min-width: 520px; }
+        .stats-table th, .stats-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #1c2434;
+            text-align: left;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .stats-table th { color: #8d98ad; font-weight: normal; }
+        .good { color: #4ade80; }
+        .bad { color: #ff8b9b; }
+        .muted { color: #8d98ad; }
+        @media (max-width: 900px) {
+            .analytics-grid { grid-template-columns: 1fr; }
+        }
+
     </style>
 </head>
 <body>
@@ -221,9 +274,87 @@
         </div>
     </section>
 
+
+    <h2 class="section-title" id="usage-analytics">API Analytics · Last 24 Hours</h2>
+    <section class="analytics-grid">
+        <div class="card">
+            <div class="label">All Recorded Requests</div>
+            <div class="value">{{ api_total_24h }}</div>
+            <div class="subtext">Requests recorded in the last 24 hours</div>
+        </div>
+        <div class="card">
+            <div class="label">Successful</div>
+            <div class="value good">{{ api_used }}</div>
+            <div class="subtext">HTTP 200 · Counts toward quota</div>
+        </div>
+        <div class="card">
+            <div class="label">Non-200 Responses</div>
+            <div class="value bad">{{ api_failed }}</div>
+            <div class="subtext">Recorded responses other than HTTP 200</div>
+        </div>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+        <h2>Seven-Day Usage Trend</h2>
+        <p class="subtext">Recorded API requests by UTC date. Bars show total requests.</p>
+        <div class="chart-bars">
+            {% for day in daily_stats %}
+            <div class="chart-day">
+                <div class="chart-number">{{ day.total }}</div>
+                <div class="bar-track">
+                    <div class="bar"
+                         title="{{ day.date }}: {{ day.total }} requests"
+                         style="height: {{ (day.total * 100 / chart_max) if chart_max else 3 }}%;"></div>
+                </div>
+                <div>{{ day.label }}</div>
+                <div class="muted">{{ day.date }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+        <h2>Per-Key Statistics</h2>
+        <div class="table-wrap">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>API Key</th>
+                        <th>Total</th>
+                        <th>Success</th>
+                        <th>Non-200</th>
+                        <th>Last Request</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in key_stats %}
+                    <tr>
+                        <td>
+                            {{ stat.key.name or 'Default' }}
+                            <br>
+                            <span class="muted">
+                                {% if stat.key.is_active %}Active{% else %}Revoked{% endif %}
+                                · ID #{{ stat.key.id }}
+                            </span>
+                        </td>
+                        <td>{{ stat.total }}</td>
+                        <td class="good">{{ stat.successes }}</td>
+                        <td class="bad">{{ stat.failures }}</td>
+                        <td>
+                            {{ stat.last_request.strftime('%d/%m/%y %H:%M UTC') if stat.last_request else 'Never' }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="muted">No API keys found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <section class="content">
         <div class="panel">
-            <h2>Recent API Activity</h2>
+            <h2>Recent API Requests</h2>
             {% for item in recent_api_usage %}
                 <div class="activity">
                     {% if item.status_code == 200 %}🟢{% else %}🟠{% endif %}
