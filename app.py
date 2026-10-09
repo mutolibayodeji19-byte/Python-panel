@@ -42,8 +42,10 @@ def version():
     return {
         "service": "PRIME ZENITH",
         "deployed_commit": os.environ.get(
-            "RENDER_GIT_COMMIT", "unknown"
-        )
+            "RENDER_GIT_COMMIT"
+        ) or __import__("subprocess").getoutput(
+            "git rev-parse HEAD"
+        ).strip() or "unknown"
     }, 200
 
 
