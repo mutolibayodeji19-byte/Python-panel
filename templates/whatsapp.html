@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WhatsApp Manager | PRIME ZENITH</title>
+<style>
+body{margin:0;background:#0b1120;color:#e5e7eb;font:15px Arial,sans-serif}
+main{max-width:1000px;margin:auto;padding:24px}
+a{color:#60a5fa}.panel{background:#111b2e;border:1px solid #26344b;border-radius:12px;padding:18px;margin:16px 0}
+input,select,button{box-sizing:border-box;padding:11px;border-radius:8px;border:1px solid #34445d;margin:4px 0}
+input,select{background:#0b1120;color:white;max-width:100%}
+button{background:#2563eb;color:white;cursor:pointer;border:0}
+form{display:flex;gap:8px;flex-wrap:wrap}form input{flex:1;min-width:150px}
+small,.muted{color:#9ca3af}.item{border-top:1px solid #26344b;padding:14px 0;overflow-wrap:anywhere}
+.danger{background:#991b1b}
+</style>
+</head>
+<body><main>
+<p><a href="/">← Dashboard</a> · <a href="/tools/uptime">Uptime Monitor</a></p>
+<h1>WhatsApp Bot Manager</h1>
+<p class="muted">This page stores bot details only. Status is a record, not proof of a live WhatsApp connection.</p>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}<div class="panel">{{ message }}</div>{% endfor %}
+{% endwith %}
+<section class="panel">
+<h2>Add a bot entry</h2>
+<form method="post">
+<input type="hidden" name="action" value="add">
+<input name="name" maxlength="80" placeholder="Bot name (e.g. ZENTRA)" required>
+<input name="phone_label" maxlength="40" placeholder="Phone label (optional)">
+<input name="hosting_label" maxlength="120" placeholder="Hosting location (optional)">
+<button type="submit">Save bot</button>
+</form>
+</section>
+<section class="panel"><h2>Your bot entries</h2>
+{% for bot in bots %}
+<div class="item">
+<strong>{{ bot.name }}</strong> — {{ bot.connection_status }}
+<br><small>Phone label: {{ bot.phone_label or 'Not set' }} · Hosting: {{ bot.hosting_label or 'Not set' }}</small>
+<form method="post">
+<input type="hidden" name="bot_id" value="{{ bot.id }}">
+<select name="status" aria-label="Recorded bot status">
+{% for status in ['Not connected','Connecting','Connected','Stopped','Error'] %}
+<option value="{{ status }}" {% if bot.connection_status == status %}selected{% endif %}>{{ status }}</option>
+{% endfor %}
+</select>
+<button name="action" value="status">Save status</button>
+<button class="danger" name="action" value="delete" onclick="return confirm('Remove this bot entry?')">Delete</button>
+</form>
+</div>
+{% else %}<p class="muted">No bot entries saved yet.</p>{% endfor %}
+</section></main></body></html>

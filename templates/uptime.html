@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uptime Monitor | PRIME ZENITH</title>
+<style>
+body{margin:0;background:#0b1120;color:#e5e7eb;font:15px Arial,sans-serif}
+main{max-width:1000px;margin:auto;padding:24px}
+a{color:#60a5fa}.panel{background:#111b2e;border:1px solid #26344b;border-radius:12px;padding:18px;margin:16px 0}
+input,button{box-sizing:border-box;padding:11px;border-radius:8px;border:1px solid #34445d;margin:4px 0}
+input{background:#0b1120;color:white;max-width:100%;width:100%}
+button{background:#2563eb;color:white;cursor:pointer;border:0}
+form{display:flex;gap:8px;flex-wrap:wrap}form input{flex:1;min-width:180px}
+small,.muted{color:#9ca3af}.item{border-top:1px solid #26344b;padding:14px 0;overflow-wrap:anywhere}
+.inline{display:inline-flex;gap:6px;margin-right:6px}.danger{background:#991b1b}
+</style>
+</head>
+<body><main>
+<p><a href="/">← Dashboard</a> · <a href="/tools/whatsapp">WhatsApp Manager</a></p>
+<h1>Website Uptime</h1>
+<p class="muted">Checks run when you press Check. Redirects and private/local destinations are blocked.</p>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}<div class="panel">{{ message }}</div>{% endfor %}
+{% endwith %}
+<section class="panel">
+<h2>Add a website</h2>
+<form method="post">
+<input type="hidden" name="action" value="add">
+<input name="name" maxlength="80" placeholder="Website name" required>
+<input name="url" maxlength="500" type="url" placeholder="https://example.com" required>
+<button type="submit">Add website</button>
+</form>
+</section>
+<section class="panel"><h2>Your websites</h2>
+{% for item in monitors %}
+<div class="item">
+<strong>{{ item.name }}</strong> — {{ item.last_status }}
+<br><a href="{{ item.url }}" rel="noreferrer">{{ item.url }}</a>
+<br><small>HTTP {{ item.last_code if item.last_code is not none else "—" }}
+· {{ item.last_response_ms if item.last_response_ms is not none else "—" }} ms
+· {{ item.last_checked.strftime('%Y-%m-%d %H:%M:%S UTC') if item.last_checked else 'Not checked yet' }}</small>
+<form method="post" class="inline">
+<input type="hidden" name="monitor_id" value="{{ item.id }}">
+<button name="action" value="check">Check now</button>
+<button class="danger" name="action" value="delete" onclick="return confirm('Remove this website?')">Delete</button>
+</form>
+</div>
+{% else %}<p class="muted">No websites added yet.</p>{% endfor %}
+</section></main></body></html>

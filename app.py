@@ -7,6 +7,7 @@ from config import Config
 from database.database import db
 from database.models import User
 from database.api_models import APIKey
+from database.feature_models import UptimeMonitor, WhatsAppBot
 
 
 app = Flask(__name__)
@@ -29,12 +30,14 @@ from routes.dashboard import dashboard
 from routes.admin import admin
 from routes.api_keys import api_keys
 from routes.api import api
+from routes.features import features
 
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
 app.register_blueprint(admin)
 app.register_blueprint(api_keys)
 app.register_blueprint(api)
+app.register_blueprint(features)
 
 
 @app.route("/version", methods=["GET"])
