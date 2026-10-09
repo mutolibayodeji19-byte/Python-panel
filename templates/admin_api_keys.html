@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRIME ZENITH · API Keys</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080d18;color:#e8eefb;font:15px Arial,sans-serif}
+header{padding:22px;background:#111a2b;border-bottom:1px solid #26344b}
+main{max-width:1100px;margin:auto;padding:22px}.back{color:#73b7ff;text-decoration:none}
+.card{background:#111a2b;border:1px solid #26344b;border-radius:14px;padding:16px;margin:14px 0;overflow-wrap:anywhere}
+.muted{color:#9baac2}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px;border-bottom:1px solid #26344b}
+.wrap{overflow-x:auto}.pill{display:inline-block;padding:5px 9px;border-radius:20px;background:#183a30}
+@media(max-width:650px){th,td{padding:8px;font-size:12px}}
+</style>
+</head>
+<body>
+<header><h2>👑 PRIME ZENITH · API Keys</h2><a class="back" href="/admin/">← Back to Admin</a></header>
+<main>
+<div class="card"><h3>All API Keys</h3><p class="muted">Secret values are hidden. Usage totals include all recorded requests.</p>
+<div class="wrap"><table><thead><tr><th>Key ID</th><th>Name</th><th>Owner</th><th>Status</th><th>Requests</th><th>Last used</th></tr></thead><tbody>
+{% for key, user in key_rows %}
+<tr><td>#{{ key.id }}</td><td>{{ key.name or 'Default' }}</td><td>{{ user.username }}</td><td><span class="pill">{{ 'Active' if key.is_active else 'Revoked' }}</span></td><td>{{ usage_counts.get(key.id, 0) }}</td><td>{{ key.last_used.strftime('%d/%m/%Y %H:%M') if key.last_used else 'Never' }}</td></tr>
+{% else %}<tr><td colspan="6">No API keys found.</td></tr>{% endfor %}
+</tbody></table></div></div>
+</main></body></html>

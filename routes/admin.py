@@ -2,7 +2,9 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 
 from database.database import db
+from sqlalchemy import func
 from database.models import User
+from database.api_models import APIKey, APIUsage
 
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
@@ -142,3 +144,57 @@ def delete_user(user_id):
     flash(f"{user.username} has been deleted.", "success")
 
     return redirect(url_for("admin.home"))
+
+
+@admin.route("/api-keys")
+@login_required
+def api_keys_page():
+    key_rows = (
+        db.session.query(APIKey, User)
+        .join(User, APIKey.user_id == User.id)
+        .order_by(APIKey.id.desc())
+        .all()
+    )
+
+    usage_counts = dict(
+        db.session.query(APIUsage.api_key_id, func.count(APIUsage.id))
+        .group_by(APIUsage.api_key_id)
+        .all()
+    )
+
+    return render_template(
+        "admin_api_keys.html",
+        key_rows=key_rows,
+        usage_counts=usage_counts
+    )
+
+
+@admin.route("/statistics")
+@login_required
+def statistics_page():
+    total_users = User.query.count()
+    active_users = User.query.filter_by(is_active_user=True).count()
+    total_keys = APIKey.query.count()
+    active_keys = APIKey.query.filter_by(is_active=True).count()
+    total_requests = APIUsage.query.count()
+    failed_requests = APIUsage.query.filter(APIUsage.status_code != 200).count()
+
+    recent_rows = (
+        db.session.query(APIUsage, APIKey, User)
+        .join(APIKey, APIUsage.api_key_id == APIKey.id)
+        .join(User, APIKey.user_id == User.id)
+        .order_by(APIUsage.created_at.desc(), APIUsage.id.desc())
+        .limit(20)
+        .all()
+    )
+
+    return render_template(
+        "admin_statistics.html",
+        total_users=total_users,
+        active_users=active_users,
+        total_keys=total_keys,
+        active_keys=active_keys,
+        total_requests=total_requests,
+        failed_requests=failed_requests,
+        recent_rows=recent_rows
+    )

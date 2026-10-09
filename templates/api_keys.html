@@ -1,76 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>API Keys | PRIME ZENITH</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #080b14; color: white; font-family: Arial, sans-serif; }
-        .main { max-width: 900px; margin: auto; padding: 24px 16px; }
-        .card { background: #101522; border: 1px solid #1b2436; border-radius: 16px; padding: 22px; margin-bottom: 18px; }
-        h1 { margin-top: 0; }
-        .subtitle { color: #8d98ad; }
-        .key { background: #080b14; border: 1px solid #27324a; border-radius: 10px; padding: 14px; margin-top: 12px; overflow-wrap: anywhere; font-family: monospace; }
-        button { margin-top: 12px; padding: 12px 18px; border: 0; border-radius: 10px; background: #4f8cff; color: white; font-weight: bold; cursor: pointer; }
-        .revoke { background: #ff4d4d; }
-        .active { color: #62e6a7; font-weight: bold; }
-        .revoked { color: #ff7777; font-weight: bold; }
-        .message { color: #62e6a7; }
-        .back { color: #7db7ff; text-decoration: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API Keys | PRIME ZENITH</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080b14;color:#fff;font-family:Arial,sans-serif}
+.main{max-width:900px;margin:auto;padding:24px 16px}
+.card{background:#101522;border:1px solid #1b2436;border-radius:16px;padding:22px;margin-bottom:18px}
+h1{margin-top:0}
+.subtitle,.muted{color:#8d98ad}
+.key{background:#080b14;border:1px solid #27324a;border-radius:10px;padding:14px;margin-top:12px;overflow-wrap:anywhere;font-family:monospace}
+input{width:100%;max-width:420px;padding:12px;border:1px solid #27324a;border-radius:9px;background:#080b14;color:white;margin:6px 0}
+button{padding:11px 16px;border:0;border-radius:9px;background:#4f8cff;color:white;font-weight:bold;cursor:pointer;margin:6px 4px 0 0}
+.revoke{background:#ff4d4d}
+.active,.good{color:#62e6a7;font-weight:bold}
+.revoked,.bad{color:#ff7777;font-weight:bold}
+.message{color:#62e6a7}
+.back{color:#7db7ff;text-decoration:none}
+.stats{display:flex;gap:18px;flex-wrap:wrap}
+.stats span{color:#8d98ad}
+form{margin-top:10px}
+</style>
 </head>
 <body>
 <main class="main">
-    <div class="card">
-        <h1>🔑 API Keys</h1>
-        <p class="subtitle">Manage your PRIME ZENITH API keys.</p>
+<div class="card">
+<h1>🔑 PRIME ZENITH API Keys</h1>
+<p class="subtitle">Create, rename, monitor, and revoke your API keys.</p>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}
+<p class="message">{{ message }}</p>
+{% endfor %}
+{% endwith %}
+<h3>Generate a key</h3>
+<form method="POST" action="{{ url_for('api_keys.create') }}">
+<input name="name" maxlength="80" placeholder="Key name (e.g. My Website)" aria-label="New API key name">
+<br><button type="submit">+ Generate API Key</button>
+</form>
+<p class="subtitle">Keep your API keys private. Anyone with a key may be able to use your API quota.</p>
+</div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                <p class="message">{{ message }}</p>
-            {% endfor %}
-        {% endwith %}
+{% if keys %}
+{% for api_key in keys %}
+{% set stat = stats.get(api_key.id, {}) %}
+<div class="card">
+<h3>{{ api_key.name or 'Default' }}</h3>
+<div class="key">{{ api_key.key }}</div>
+<p>Status:
+{% if api_key.is_active %}<span class="active">ACTIVE</span>
+{% else %}<span class="revoked">REVOKED</span>{% endif %}
+· Key ID #{{ api_key.id }}
+</p>
+<div class="stats">
+<div><span>Total requests</span><br><strong>{{ stat.get('total', 0) }}</strong></div>
+<div><span>Successful</span><br><strong class="good">{{ stat.get('successes', 0) }}</strong></div>
+<div><span>Failed</span><br><strong class="bad">{{ stat.get('failures', 0) }}</strong></div>
+</div>
+<p>Created: {{ api_key.created_at.strftime('%d/%m/%Y %H:%M') if api_key.created_at else 'Unknown' }}</p>
+<p>Last used: {{ api_key.last_used.strftime('%d/%m/%Y %H:%M') if api_key.last_used else 'Never' }}</p>
 
-        <form method="POST" action="{{ url_for('api_keys.create') }}">
-            <button type="submit">+ Generate API Key</button>
-        </form>
-    </div>
+<form method="POST" action="{{ url_for('api_keys.rename', key_id=api_key.id) }}">
+<label for="key-name-{{ api_key.id }}">Rename key</label><br>
+<input id="key-name-{{ api_key.id }}" name="name" maxlength="80" value="{{ api_key.name or 'Default' }}" required>
+<br><button type="submit">Save Name</button>
+</form>
 
-    {% if keys %}
-        {% for api_key in keys %}
-            <div class="card">
-                <h3>{{ api_key.name }}</h3>
-                <div class="key">{{ api_key.key }}</div>
-                <p>Status:
-                    {% if api_key.is_active %}
-                        <span class="active">ACTIVE</span>
-                    {% else %}
-                        <span class="revoked">REVOKED</span>
-                    {% endif %}
-                </p>
-                <p>Created: {{ api_key.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
-
-                {% if api_key.last_used %}
-                    <p>Last used: {{ api_key.last_used.strftime('%d/%m/%Y %H:%M') }}</p>
-                {% else %}
-                    <p class="subtitle">Never used</p>
-                {% endif %}
-
-                {% if api_key.is_active %}
-                    <form method="POST" action="{{ url_for('api_keys.revoke', key_id=api_key.id) }}">
-                        <button class="revoke" type="submit">Revoke Key</button>
-                    </form>
-                {% endif %}
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="card">
-            <p class="subtitle">You don't have any API keys yet.</p>
-        </div>
-    {% endif %}
-
-    <a class="back" href="/">← Back to Dashboard</a>
+{% if api_key.is_active %}
+<form method="POST" action="{{ url_for('api_keys.revoke', key_id=api_key.id) }}" onsubmit="return confirm('Revoke this API key? Applications using it will stop working.');">
+<button class="revoke" type="submit">Revoke Key</button>
+</form>
+{% endif %}
+</div>
+{% endfor %}
+{% else %}
+<div class="card"><p class="subtitle">You don't have any API keys yet.</p></div>
+{% endif %}
+<a class="back" href="/">← Back to Dashboard</a>
 </main>
 </body>
 </html>

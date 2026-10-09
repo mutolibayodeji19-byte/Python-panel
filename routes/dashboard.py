@@ -157,3 +157,40 @@ def home():
         chart_max=chart_max,
         key_stats=key_stats
     )
+
+
+@dashboard.route("/monitor/feed")
+@login_required
+def monitor_feed():
+    from flask import jsonify
+
+    keys = APIKey.query.filter_by(user_id=current_user.id).all()
+    key_ids = [key.id for key in keys]
+
+    if not key_ids:
+        return jsonify({"requests": []})
+
+    rows = (
+        APIUsage.query
+        .filter(APIUsage.api_key_id.in_(key_ids))
+        .order_by(APIUsage.created_at.desc(), APIUsage.id.desc())
+        .limit(25)
+        .all()
+    )
+
+    names = {key.id: (key.name or "Default") for key in keys}
+
+    return jsonify({
+        "requests": [
+            {
+                "key_name": names.get(item.api_key_id, "API Key"),
+                "endpoint": item.endpoint,
+                "status_code": item.status_code,
+                "created_at": (
+                    item.created_at.strftime("%d/%m/%Y %H:%M:%S UTC")
+                    if item.created_at else "Time unavailable"
+                ),
+            }
+            for item in rows
+        ]
+    })

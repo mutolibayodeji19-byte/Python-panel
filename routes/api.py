@@ -12,7 +12,6 @@ api = Blueprint("api", __name__, url_prefix="/api/v1")
 
 def daily_limit_for(user):
     plan = (user.plan or "FREE").upper()
-
     limits = {
         "OWNER": None,
         "ADMIN": None,
@@ -21,8 +20,17 @@ def daily_limit_for(user):
         "PAID": 1000,
         "FREE": 100,
     }
-
     return limits.get(plan, 100)
+
+
+def record_usage(api_key, status_code):
+    """Record requests tied to a known API key, without storing the key itself."""
+    db.session.add(APIUsage(
+        api_key_id=api_key.id,
+        endpoint="/api/v1/ping",
+        status_code=status_code,
+    ))
+    db.session.commit()
 
 
 @api.route("/ping", methods=["GET"])
@@ -47,18 +55,19 @@ def ping():
         }), 401
 
     user = db.session.get(User, api_key.user_id)
+    now = datetime.utcnow()
 
     if (
         not user
         or not user.is_active_user
-        or (user.expires_at and user.expires_at <= datetime.utcnow())
+        or (user.expires_at and user.expires_at <= now)
     ):
+        record_usage(api_key, 403)
         return jsonify({
             "success": False,
             "error": "Account inactive or expired"
         }), 403
 
-    now = datetime.utcnow()
     since = now - timedelta(hours=24)
     limit = daily_limit_for(user)
 
@@ -73,6 +82,7 @@ def ping():
     ).count()
 
     if limit is not None and recent_usage >= limit:
+        record_usage(api_key, 429)
         return jsonify({
             "success": False,
             "error": "API usage limit reached",
@@ -81,15 +91,7 @@ def ping():
         }), 429
 
     api_key.last_used = now
-
-    usage = APIUsage(
-        api_key_id=api_key.id,
-        endpoint="/api/v1/ping",
-        status_code=200
-    )
-
-    db.session.add(usage)
-    db.session.commit()
+    record_usage(api_key, 200)
 
     return jsonify({
         "success": True,

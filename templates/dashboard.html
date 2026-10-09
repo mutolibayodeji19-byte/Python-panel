@@ -354,19 +354,21 @@
 
     <section class="content">
         <div class="panel">
-            <h2>Recent API Requests</h2>
-            {% for item in recent_api_usage %}
-                <div class="activity">
-                    {% if item.status_code == 200 %}🟢{% else %}🟠{% endif %}
-                    {{ item.endpoint }}
-                    <small>
-                        HTTP {{ item.status_code }}
-                        · {{ item.created_at.strftime('%d/%m/%Y %H:%M:%S') if item.created_at else 'Time unavailable' }} UTC
-                    </small>
-                </div>
-            {% else %}
-                <p class="empty">No API activity recorded yet.</p>
-            {% endfor %}
+            <h2>Recent API Requests <span class="muted" id="monitor-status">· Live updates every 10 seconds</span></h2>
+            <div id="live-api-requests" aria-live="polite">
+                {% for item in recent_api_usage %}
+                    <div class="activity">
+                        {% if item.status_code == 200 %}🟢{% else %}🟠{% endif %}
+                        {{ item.endpoint }}
+                        <small>
+                            HTTP {{ item.status_code }}
+                            · {{ item.created_at.strftime('%d/%m/%Y %H:%M:%S') if item.created_at else 'Time unavailable' }} UTC
+                        </small>
+                    </div>
+                {% else %}
+                    <p class="empty">No API activity recorded yet.</p>
+                {% endfor %}
+            </div>
         </div>
 
         <div class="panel">
@@ -383,5 +385,58 @@
         </div>
     </section>
 </main>
-</body>
+
+<script>
+(() => {
+    const container = document.getElementById("live-api-requests");
+    const status = document.getElementById("monitor-status");
+    if (!container || !status) return;
+
+    async function refreshRequests() {
+        try {
+            const response = await fetch("/monitor/feed", {
+                headers: {"Accept": "application/json"},
+                cache: "no-store"
+            });
+            if (!response.ok) throw new Error("Monitor feed unavailable");
+
+            const data = await response.json();
+            container.replaceChildren();
+
+            if (!data.requests || data.requests.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "empty";
+                empty.textContent = "No API activity recorded yet.";
+                container.appendChild(empty);
+            } else {
+                for (const item of data.requests) {
+                    const entry = document.createElement("div");
+                    entry.className = "activity";
+
+                    const icon = document.createElement("span");
+                    icon.textContent = Number(item.status_code) === 200 ? "🟢 " : "🟠 ";
+                    entry.appendChild(icon);
+
+                    const endpoint = document.createElement("span");
+                    endpoint.textContent = (item.key_name || "API Key") + " · " + (item.endpoint || "");
+                    entry.appendChild(endpoint);
+
+                    const details = document.createElement("small");
+                    details.textContent = "HTTP " + item.status_code + " · " + (item.created_at || "Time unavailable");
+                    entry.appendChild(details);
+
+                    container.appendChild(entry);
+                }
+            }
+            status.textContent = "· Live · Updated just now";
+        } catch (error) {
+            status.textContent = "· Live feed temporarily unavailable";
+        }
+    }
+
+    refreshRequests();
+    window.setInterval(refreshRequests, 10000);
+})();
+</script>
+\n</body>
 </html>

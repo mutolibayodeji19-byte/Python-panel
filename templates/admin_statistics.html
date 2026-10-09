@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRIME ZENITH · Statistics</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080d18;color:#e8eefb;font:15px Arial,sans-serif}
+header{padding:22px;background:#111a2b;border-bottom:1px solid #26344b}
+main{max-width:1100px;margin:auto;padding:22px}.back{color:#73b7ff;text-decoration:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.card{background:#111a2b;border:1px solid #26344b;border-radius:14px;padding:17px;margin:12px 0}
+.num{font-size:27px;font-weight:bold;margin-top:10px}.muted{color:#9baac2}
+.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px;border-bottom:1px solid #26344b}
+@media(max-width:650px){th,td{padding:8px;font-size:12px}}
+</style>
+</head>
+<body>
+<header><h2>📊 PRIME ZENITH · Statistics</h2><a class="back" href="/admin/">← Back to Admin</a></header>
+<main>
+<div class="grid">
+<div class="card">Total users<div class="num">{{ total_users }}</div></div>
+<div class="card">Active users<div class="num">{{ active_users }}</div></div>
+<div class="card">All API keys<div class="num">{{ total_keys }}</div></div>
+<div class="card">Active keys<div class="num">{{ active_keys }}</div></div>
+<div class="card">Recorded requests<div class="num">{{ total_requests }}</div></div>
+<div class="card">Non-200 responses<div class="num">{{ failed_requests }}</div></div>
+</div>
+<div class="card"><h3>Latest API Requests</h3><p class="muted">Times are shown in UTC.</p>
+<div class="wrap"><table><thead><tr><th>Owner</th><th>Key</th><th>Endpoint</th><th>Status</th><th>Time</th></tr></thead><tbody>
+{% for usage, key, user in recent_rows %}
+<tr><td>{{ user.username }}</td><td>{{ key.name or 'Default' }}</td><td>{{ usage.endpoint }}</td><td>{{ usage.status_code }}</td><td>{{ usage.created_at.strftime('%d/%m/%Y %H:%M:%S') if usage.created_at else 'Unavailable' }}</td></tr>
+{% else %}<tr><td colspan="5">No requests recorded yet.</td></tr>{% endfor %}
+</tbody></table></div></div>
+</main></body></html>
