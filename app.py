@@ -37,6 +37,16 @@ app.register_blueprint(api_keys)
 app.register_blueprint(api)
 
 
+@app.route("/version", methods=["GET"])
+def version():
+    return {
+        "service": "PRIME ZENITH",
+        "deployed_commit": os.environ.get(
+            "RENDER_GIT_COMMIT", "unknown"
+        )
+    }, 200
+
+
 def create_owner():
     username = os.environ.get("OWNER_USERNAME")
     email = os.environ.get("OWNER_EMAIL")
