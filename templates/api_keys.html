@@ -2,154 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>API Keys | Python Panel</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>API Keys | PRIME ZENITH</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #080b14;
-            color: white;
-        }
-
-        .main {
-            max-width: 900px;
-            margin: auto;
-            padding: 30px 20px;
-        }
-
-        .card {
-            background: #101522;
-            border: 1px solid #1b2436;
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            margin-top: 0;
-        }
-
-        .subtitle {
-            color: #8d98ad;
-        }
-
-        .key {
-            background: #080b14;
-            border: 1px solid #27324a;
-            border-radius: 10px;
-            padding: 14px;
-            margin-top: 12px;
-            word-break: break-all;
-            font-family: monospace;
-        }
-
-        button {
-            margin-top: 15px;
-            padding: 12px 18px;
-            border: 0;
-            border-radius: 10px;
-            background: #4f8cff;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #3b73d9;
-        }
-
-        .status {
-            color: #62e6a7;
-            font-weight: bold;
-        }
-
-        .back {
-            color: #7db7ff;
-            text-decoration: none;
-        }
-
-        .message {
-            color: #62e6a7;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #080b14; color: white; font-family: Arial, sans-serif; }
+        .main { max-width: 900px; margin: auto; padding: 24px 16px; }
+        .card { background: #101522; border: 1px solid #1b2436; border-radius: 16px; padding: 22px; margin-bottom: 18px; }
+        h1 { margin-top: 0; }
+        .subtitle { color: #8d98ad; }
+        .key { background: #080b14; border: 1px solid #27324a; border-radius: 10px; padding: 14px; margin-top: 12px; overflow-wrap: anywhere; font-family: monospace; }
+        button { margin-top: 12px; padding: 12px 18px; border: 0; border-radius: 10px; background: #4f8cff; color: white; font-weight: bold; cursor: pointer; }
+        .revoke { background: #ff4d4d; }
+        .active { color: #62e6a7; font-weight: bold; }
+        .revoked { color: #ff7777; font-weight: bold; }
+        .message { color: #62e6a7; }
+        .back { color: #7db7ff; text-decoration: none; }
     </style>
 </head>
-
 <body>
-
 <main class="main">
-
     <div class="card">
-
         <h1>🔑 API Keys</h1>
-
-        <p class="subtitle">
-            Manage your API keys for the Python Panel.
-        </p>
+        <p class="subtitle">Manage your PRIME ZENITH API keys.</p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <p class="message">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
+            {% for category, message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
         {% endwith %}
 
-        <form method="POST" action="/api-keys/create">
-            <button type="submit">
-                + Generate API Key
-            </button>
+        <form method="POST" action="{{ url_for('api_keys.create') }}">
+            <button type="submit">+ Generate API Key</button>
         </form>
-
     </div>
 
+    {% if keys %}
+        {% for api_key in keys %}
+            <div class="card">
+                <h3>{{ api_key.name }}</h3>
+                <div class="key">{{ api_key.key }}</div>
+                <p>Status:
+                    {% if api_key.is_active %}
+                        <span class="active">ACTIVE</span>
+                    {% else %}
+                        <span class="revoked">REVOKED</span>
+                    {% endif %}
+                </p>
+                <p>Created: {{ api_key.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
 
-    {% for api_key in keys %}
-
-        <div class="card">
-
-            <h3>{{ api_key.name }}</h3>
-
-            <div class="key">
-                {{ api_key.key }}
-            </div>
-
-            <p>
-                Status:
-                {% if api_key.is_active %}
-                    <span class="status">ACTIVE</span>
+                {% if api_key.last_used %}
+                    <p>Last used: {{ api_key.last_used.strftime('%d/%m/%Y %H:%M') }}</p>
                 {% else %}
-                    <span>REVOKED</span>
+                    <p class="subtitle">Never used</p>
                 {% endif %}
-            </p>
 
-            <p>
-                Created:
-                {{ api_key.created_at.strftime('%d/%m/%Y %H:%M') }}
-            </p> {% if api_key.is_active %} <form method="POST" action="/api-keys/revoke/{{ api_key.id }}"> 
-        <button type="submit" style="background:#ff4d4d;"> </div>
-            Revoke Key {% else %} </button> <div class="card"> </form> <p class="subtitle">
-{% endif %}
-                You don't have any API keys yet.
-            </p>
+                {% if api_key.is_active %}
+                    <form method="POST" action="{{ url_for('api_keys.revoke', key_id=api_key.id) }}">
+                        <button class="revoke" type="submit">Revoke Key</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="card">
+            <p class="subtitle">You don't have any API keys yet.</p>
         </div>
+    {% endif %}
 
-    {% endfor %}
-
-
-    <a class="back" href="/">
-        ← Back to Dashboard
-    </a>
-
+    <a class="back" href="/">← Back to Dashboard</a>
 </main>
-
 </body>
 </html>

@@ -27,3 +27,24 @@ class APIKey(db.Model):
         db.DateTime,
         nullable=True
     )
+
+
+class APIUsage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    api_key_id = db.Column(
+        db.Integer,
+        db.ForeignKey("api_key.id"),
+        nullable=False,
+        index=True
+    )
+
+    endpoint = db.Column(db.String(120), nullable=False)
+    status_code = db.Column(db.Integer, nullable=False)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        nullable=False,
+        index=True
+    )

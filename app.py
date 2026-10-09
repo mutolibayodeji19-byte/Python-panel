@@ -28,11 +28,13 @@ from routes.auth import auth
 from routes.dashboard import dashboard
 from routes.admin import admin
 from routes.api_keys import api_keys
+from routes.api import api
 
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
 app.register_blueprint(admin)
 app.register_blueprint(api_keys)
+app.register_blueprint(api)
 
 
 def create_owner():

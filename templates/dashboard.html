@@ -3,21 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Dashboard | Python Panel</title>
-
+    <title>Dashboard | PRIME ZENITH</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background: #080b14;
             color: #fff;
         }
-
         .sidebar {
             position: fixed;
             left: 0;
@@ -27,18 +21,13 @@
             background: #101522;
             padding: 25px 15px;
         }
-
         .logo {
             font-size: 22px;
             font-weight: bold;
             margin-bottom: 35px;
             padding: 0 10px;
         }
-
-        .logo span {
-            color: #4f8cff;
-        }
-
+        .logo span { color: #4f8cff; }
         .nav a {
             display: block;
             padding: 13px 15px;
@@ -47,20 +36,16 @@
             color: #aab3c5;
             text-decoration: none;
         }
-
-        .nav a:hover,
-        .nav .active {
+        .nav a:hover, .nav .active {
             background: #1c2944;
             color: #fff;
         }
-
         .logout {
             position: absolute;
             bottom: 25px;
             left: 15px;
             right: 15px;
         }
-
         .logout a {
             display: block;
             padding: 13px;
@@ -70,23 +55,18 @@
             color: #ff7185;
             text-decoration: none;
         }
-
         .main {
             margin-left: 230px;
             padding: 30px;
         }
-
         .top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            gap: 15px;
         }
-
-        .top h1 {
-            margin: 0;
-        }
-
+        .top h1 { margin: 0; }
         .status {
             padding: 9px 14px;
             border-radius: 20px;
@@ -94,201 +74,181 @@
             color: #4ade80;
             font-size: 13px;
         }
-
         .cards {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 18px;
         }
-
-        .card {
+        .card, .panel {
             background: #101522;
             border: 1px solid #1b2436;
             border-radius: 16px;
             padding: 22px;
+            min-width: 0;
         }
-
         .card .label {
             color: #8d98ad;
             font-size: 14px;
         }
-
         .card .value {
             font-size: 27px;
             font-weight: bold;
             margin-top: 10px;
+            overflow-wrap: anywhere;
         }
-
+        .subtext {
+            color: #8d98ad;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .section-title {
+            margin: 30px 0 16px;
+            font-size: 20px;
+        }
         .content {
             margin-top: 22px;
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 18px;
         }
-
-        .panel {
-            background: #101522;
-            border: 1px solid #1b2436;
-            border-radius: 16px;
-            padding: 22px;
-        }
-
-        .panel h2 {
-            margin-top: 0;
-        }
-
+        .panel h2 { margin-top: 0; font-size: 18px; }
         .activity {
             padding: 13px 0;
             border-bottom: 1px solid #1c2434;
             color: #aab3c5;
+            overflow-wrap: anywhere;
         }
-
+        .activity:last-child { border-bottom: 0; }
+        .activity small {
+            display: block;
+            color: #7f8ba2;
+            margin-top: 6px;
+        }
+        .empty { color: #8d98ad; }
+        .panel a { color: #79a7ff; text-decoration: none; }
+        .panel a:hover { text-decoration: underline; }
+        @media (max-width: 1100px) {
+            .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
         @media (max-width: 900px) {
             .sidebar {
                 position: relative;
                 width: 100%;
                 height: auto;
             }
-
             .logout {
                 position: static;
                 margin-top: 20px;
             }
-
-            .main {
-                margin-left: 0;
-                padding: 20px;
-            }
-
-            .cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .content {
-                grid-template-columns: 1fr;
-            }
+            .main { margin-left: 0; padding: 20px; }
+            .content { grid-template-columns: 1fr; }
         }
-
         @media (max-width: 500px) {
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .top {
-                align-items: flex-start;
-                gap: 15px;
-                flex-direction: column;
-            }
+            .cards { grid-template-columns: 1fr; }
+            .top { align-items: flex-start; flex-direction: column; }
+            .main { padding: 15px; }
         }
     </style>
 </head>
-
 <body>
-
 <aside class="sidebar">
-
-    <div class="logo">
-        PYTHON<span>PANEL</span>
-    </div>
-
+    <div class="logo">PRIME <span>ZENITH</span></div>
     <nav class="nav">
         <a href="/" class="active">🏠 Dashboard</a>
-        <a href="#">👤 Profile</a>
-        <a href="#">📦 Services</a>
         <a href="/api-keys/">🔑 API Keys</a>
-        <a href="#">📊 Statistics</a>
-        <a href="#">⚙️ Settings</a>
     </nav>
-
-    <div class="logout">
-        <a href="/logout">🚪 Logout</a>
-    </div>
-
+    <div class="logout"><a href="/logout">🚪 Logout</a></div>
 </aside>
 
 <main class="main">
-
     <div class="top">
         <div>
             <h1>Dashboard</h1>
             <p>Welcome back, {{ user.username }}</p>
         </div>
-
-        <div class="status">
-            ● Account Active
-        </div>
+        <div class="status">● Account Active</div>
     </div>
 
+    <h2 class="section-title">Account Overview</h2>
     <section class="cards">
-
         <div class="card">
             <div class="label">User ID</div>
             <div class="value">#{{ user.id }}</div>
         </div>
-
         <div class="card">
-            <div class="label">Account</div>
+            <div class="label">Account Role</div>
             <div class="value">
-                {% if user.is_admin %}
-                    Admin
-                {% else %}
-                    User
-                {% endif %}
+                {% if user.is_admin %}Admin{% else %}User{% endif %}
             </div>
         </div>
-
         <div class="card">
-            <div class="label">Status</div>
-            <div class="value">Active</div>
+            <div class="label">Plan</div>
+            <div class="value">{{ user.plan or 'FREE' }}</div>
         </div>
-
         <div class="card">
             <div class="label">Member Since</div>
-            <div class="value">
-                {{ user.created_at.strftime('%d/%m/%y') }}
-            </div>
+            <div class="value">{{ user.created_at.strftime('%d/%m/%y') if user.created_at else '—' }}</div>
         </div>
+    </section>
 
+    <h2 class="section-title">API Usage · Last 24 Hours</h2>
+    <section class="cards">
+        <div class="card">
+            <div class="label">Successful Requests</div>
+            <div class="value">{{ api_used }}</div>
+            <div class="subtext">Across your API keys</div>
+        </div>
+        <div class="card">
+            <div class="label">Remaining Requests</div>
+            <div class="value">
+                {% if api_remaining is none %}Unlimited{% else %}{{ api_remaining }}{% endif %}
+            </div>
+            <div class="subtext">Based on the account plan</div>
+        </div>
+        <div class="card">
+            <div class="label">Plan Limit</div>
+            <div class="value">
+                {% if api_limit is none %}Unlimited{% else %}{{ api_limit }}{% endif %}
+            </div>
+            <div class="subtext">Requests per rolling 24 hours</div>
+        </div>
+        <div class="card">
+            <div class="label">Total API Keys</div>
+            <div class="value">{{ api_key_count }}</div>
+            <div class="subtext"><a href="/api-keys/">Manage API keys →</a></div>
+        </div>
     </section>
 
     <section class="content">
-
         <div class="panel">
-            <h2>Recent Activity</h2>
-
-            <div class="activity">
-                🟢 Account created
-            </div>
-
-            <div class="activity">
-                🔐 Authentication system active
-            </div>
-
-            <div class="activity">
-                🌐 Dashboard accessed
-            </div>
+            <h2>Recent API Activity</h2>
+            {% for item in recent_api_usage %}
+                <div class="activity">
+                    {% if item.status_code == 200 %}🟢{% else %}🟠{% endif %}
+                    {{ item.endpoint }}
+                    <small>
+                        HTTP {{ item.status_code }}
+                        · {{ item.created_at.strftime('%d/%m/%Y %H:%M:%S') if item.created_at else 'Time unavailable' }} UTC
+                    </small>
+                </div>
+            {% else %}
+                <p class="empty">No API activity recorded yet.</p>
+            {% endfor %}
         </div>
 
         <div class="panel">
-            <h2>Account</h2>
-
+            <h2>Account Details</h2>
             <p><strong>Username:</strong> {{ user.username }}</p>
-
             <p><strong>Email:</strong> {{ user.email }}</p>
-
-            <p>
-                <strong>Role:</strong>
-                {% if user.is_admin %}
-                    Administrator 👑
-                {% else %}
-                    Standard User
-                {% endif %}
+            <p><strong>Role:</strong>
+                {% if user.is_admin %}Administrator 👑{% else %}Standard User{% endif %}
             </p>
+            <p><strong>Account status:</strong>
+                {% if user.is_active_user %}Active{% else %}Inactive{% endif %}
+            </p>
+            <p><a href="/api-keys/">Open API key management →</a></p>
         </div>
-
     </section>
-
 </main>
-
 </body>
 </html>
