@@ -62,8 +62,12 @@ def ping():
     since = now - timedelta(hours=24)
     limit = daily_limit_for(user)
 
+    account_key_ids = db.session.query(APIKey.id).filter(
+        APIKey.user_id == user.id
+    )
+
     recent_usage = APIUsage.query.filter(
-        APIUsage.api_key_id == api_key.id,
+        APIUsage.api_key_id.in_(account_key_ids),
         APIUsage.created_at >= since,
         APIUsage.status_code == 200
     ).count()
