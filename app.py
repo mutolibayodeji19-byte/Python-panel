@@ -99,6 +99,9 @@ def create_owner():
         print(f"OWNER VERIFIED: {username}")
 
 
+from routes.hosting import hosting
+app.register_blueprint(hosting)
+
 with app.app_context():
     db.create_all()
     create_owner()

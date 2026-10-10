@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRIME ZENITH | Hosting</title>
+<style>
+:root{color-scheme:dark;--bg:#080b14;--panel:#101827;--line:#263247;--text:#edf3ff;--muted:#94a3b8;--blue:#4f8cff;--green:#38d996}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,Arial,sans-serif}
+header{padding:20px 5%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}
+a{color:#8bb4ff;text-decoration:none}main{max-width:1100px;margin:auto;padding:26px 18px}
+h1{font-size:25px;margin:0}h2{font-size:18px}.muted{color:var(--muted)}.panel,.server{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:18px;margin:16px 0}
+input,select,button{font:inherit;padding:12px;border-radius:9px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:100%;margin:5px 0}
+button{background:var(--blue);color:white;font-weight:700;border:0;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.pill{font-size:12px;border:1px solid var(--line);border-radius:30px;padding:5px 9px;color:var(--green)}
+.flash{padding:10px;background:#15253a;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
+@media(min-width:650px){form.create{display:grid;grid-template-columns:2fr 1fr auto;gap:10px;align-items:center}form.create button{width:auto}}
+</style>
+</head>
+<body>
+<header><strong>⚡ PRIME ZENITH <span class="muted">/ HOSTING</span></strong><a href="/">← Main dashboard</a></header>
+<main>
+<h1>Hosting Control</h1>
+<p class="muted">Manage Python and Node.js projects in one place.</p>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}<div class="flash">{{ message }}</div>{% endfor %}
+{% endwith %}
+<section class="panel">
+<h2>＋ Create a project</h2>
+<form class="create" method="post" action="{{ url_for('hosting.create') }}">
+<input name="name" maxlength="80" placeholder="Project name" required>
+<select name="runtime" required><option value="python">Python bot</option><option value="node">Node.js / WhatsApp bot</option></select>
+<button type="submit">Create project</button>
+</form>
+</section>
+<h2>Your projects</h2>
+{% if servers %}
+<div class="grid">
+{% for server in servers %}
+<article class="server">
+<div class="row"><strong>{{ server.name }}</strong><span class="pill">Worker not connected</span></div>
+<p class="muted">{{ server.runtime|upper }} · Project #{{ server.id }}</p>
+<p class="muted">Created {{ server.created_at.strftime('%Y-%m-%d') }}</p>
+<a href="{{ url_for('hosting.detail', server_id=server.id) }}">Manage files & settings →</a>
+</article>
+{% endfor %}
+</div>
+{% else %}
+<div class="panel muted">No projects yet. Create your first Python or Node.js project above.</div>
+{% endif %}
+<p class="muted">Execution and live CPU/RAM readings are unavailable until a real worker is connected. This panel does not claim uploaded projects are running.</p>
+</main>
+</body>
+</html>

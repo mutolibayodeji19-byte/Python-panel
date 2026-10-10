@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ server.name }} | PRIME ZENITH</title>
+<style>
+:root{color-scheme:dark;--bg:#080b14;--panel:#101827;--line:#263247;--text:#edf3ff;--muted:#94a3b8;--blue:#4f8cff;--red:#e65c70}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,Arial,sans-serif}
+header{padding:20px 5%;border-bottom:1px solid var(--line)}main{max-width:1000px;margin:auto;padding:24px 16px}
+a{color:#8bb4ff;text-decoration:none}.muted{color:var(--muted)}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px;margin:15px 0}
+input,button{font:inherit;width:100%;padding:12px;margin:6px 0;border:1px solid var(--line);border-radius:9px;background:#0b1220;color:var(--text)}
+button{background:var(--blue);border:0;font-weight:700;cursor:pointer}.danger{background:#662938}.flash{padding:10px;background:#15253a;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
+.file{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center;overflow-wrap:anywhere}
+.file form{margin:0}.file button{width:auto;margin:0;padding:7px 10px;background:#662938}.small{font-size:12px}
+</style>
+</head>
+<body>
+<header><strong>⚡ PRIME ZENITH / {{ server.name }}</strong><p><a href="{{ url_for('hosting.index') }}">← All projects</a></p></header>
+<main>
+<h1>{{ server.name }}</h1>
+<p class="muted">{{ server.runtime|upper }} · Project #{{ server.id }}</p>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}<div class="flash">{{ message }}</div>{% endfor %}
+{% endwith %}
+<div class="panel">
+<h2>Server status</h2>
+<p>Worker: <strong>Not connected</strong></p>
+<p class="muted">Start/Stop and live CPU/RAM metrics are disabled until a real hosting worker is connected.</p>
+</div>
+<div class="panel">
+<h2>Upload files</h2>
+<p class="muted">Choose individual files or a ZIP archive. Request limit: 25 MB; ZIP extraction limit: 50 MB.</p>
+<form method="post" enctype="multipart/form-data" action="{{ url_for('hosting.upload', server_id=server.id) }}">
+<input type="file" name="files" multiple required>
+<button type="submit">Upload selected files</button>
+</form>
+</div>
+<div class="panel">
+<h2>Startup command</h2>
+<form method="post" action="{{ url_for('hosting.settings', server_id=server.id) }}">
+<input name="startup_command" maxlength="500" value="{{ server.startup_command }}" required>
+<button type="submit">Save startup settings</button>
+</form>
+<p class="muted">Python example: <code>python main.py</code>. Node.js example: <code>node index.js</code>. Saving this command does not execute it.</p>
+</div>
+<div class="panel">
+<h2>Project files ({{ files|length }})</h2>
+{% if files %}
+{% for file in files %}
+<div class="file">
+<div><div>{{ file.name }}</div><div class="muted small">{{ file.size }} bytes</div></div>
+<form method="post" action="{{ url_for('hosting.delete_file', server_id=server.id) }}" onsubmit="return confirm('Delete this file?')">
+<input type="hidden" name="name" value="{{ file.name }}">
+<button type="submit">Delete</button>
+</form>
+</div>
+{% endfor %}
+{% else %}
+<p class="muted">No files uploaded yet.</p>
+{% endif %}
+</div>
+<div class="panel">
+<h2>Delete project</h2>
+<p class="muted">Permanently deletes this project and its uploaded files.</p>
+<form method="post" action="{{ url_for('hosting.delete_server', server_id=server.id) }}" onsubmit="return confirm('Delete this project and all its files?')">
+<button class="danger" type="submit">Delete project</button>
+</form>
+</div>
+</main>
+</body>
+</html>
