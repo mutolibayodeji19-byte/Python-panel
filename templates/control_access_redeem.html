@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redeem Passkey</title>
+<style>
+body{margin:0;background:#0b1020;color:#edf2ff;font:16px Arial,sans-serif;padding:24px}
+main{max-width:480px;margin:40px auto;background:#151d32;padding:24px;border-radius:16px}
+input,button{box-sizing:border-box;width:100%;padding:13px;margin:8px 0;border-radius:8px}
+input{background:#0b1020;color:white;border:1px solid #46516b}
+button{background:#245ce5;color:white;border:0}
+.msg{padding:10px;background:#202b44;border-radius:8px}
+a{color:#9dbaff}
+</style>
+</head>
+<body><main>
+<h1>Enter your passkey</h1>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}<p class="msg">{{ message }}</p>{% endfor %}
+{% endwith %}
+<form method="post">
+<input name="passkey" placeholder="Paste your owner-issued passkey" required autocomplete="off">
+<button type="submit">Redeem Passkey</button>
+</form>
+<p><a href="{{ url_for('control_access.request_access') }}">Request access</a></p>
+</main></body></html>

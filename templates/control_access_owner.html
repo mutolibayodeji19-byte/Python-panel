@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRIME ZENITH Owner Controls</title>
+<style>
+body{background:#0b1020;color:#eee;font:16px Arial;padding:20px}
+main{max-width:800px;margin:auto}
+article{background:#18223a;padding:16px;margin:12px 0;border-radius:12px}
+button{padding:10px;border:0;border-radius:8px;background:#245ce5;color:white}
+.reject{background:#a83248}
+</style>
+</head>
+<body>
+<main>
+<h1>PRIME ZENITH</h1>
+<h2>Pending access requests</h2>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}
+<p>{{ message }}</p>
+{% endfor %}
+{% endwith %}
+{% for item, user in rows %}
+<article>
+<h3>{{ user.username }}</h3>
+<p>{{ user.email }}</p>
+<p>Status: {{ item.status }}</p>
+<p>Requested: {{ item.requested_at }}</p>
+{% if item.status == "pending" %}
+<form method="post" action="{{ url_for('control_access.approve_request', request_id=item.id) }}">
+<button type="submit">Approve and generate passkey</button>
+</form>
+<form method="post" action="{{ url_for('control_access.reject_request', request_id=item.id) }}">
+<button class="reject" type="submit">Reject</button>
+</form>
+{% else %}
+<p>Passkey expires: {{ item.passkey_expires_at or "Not generated" }}</p>
+<p>Temporary access expires: {{ item.access_expires_at or "Not redeemed" }}</p>
+{% if item.access_expires_at and item.access_expires_at > now %}
+<form method="post" action="{{ url_for('control_access.revoke_access', request_id=item.id) }}">
+<button class="reject" type="submit">Revoke Access</button>
+</form>
+{% endif %}
+{% endif %}
+</article>
+{% else %}
+<p>No requests yet.</p>
+{% endfor %}
+</main>
+</body>
+</html>

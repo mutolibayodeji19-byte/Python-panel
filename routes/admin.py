@@ -5,6 +5,8 @@ from database.database import db
 from sqlalchemy import func
 from database.models import User
 from database.api_models import APIKey, APIUsage
+from database.control_access_models import ControlAccessRequest
+from datetime import datetime
 
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
@@ -17,7 +19,6 @@ def admin_required():
 
     if not current_user.is_admin:
         return "Access denied — Admins only.", 403
-
 
 @admin.route("/")
 @login_required
@@ -33,6 +34,9 @@ def home():
 @admin.route("/user/<int:user_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_user(user_id):
+    if not current_user.is_admin:
+        return "Temporary access cannot modify user accounts.", 403
+
     user = db.session.get(User, user_id)
 
     if not user:
@@ -105,6 +109,9 @@ def edit_user(user_id):
 @admin.route("/user/<int:user_id>/toggle", methods=["POST"])
 @login_required
 def toggle_user(user_id):
+    if not current_user.is_admin:
+        return "Temporary access cannot modify user accounts.", 403
+
     user = db.session.get(User, user_id)
 
     if not user:
@@ -128,6 +135,9 @@ def toggle_user(user_id):
 @admin.route("/user/<int:user_id>/delete", methods=["POST"])
 @login_required
 def delete_user(user_id):
+    if not current_user.is_admin:
+        return "Temporary access cannot modify user accounts.", 403
+
     user = db.session.get(User, user_id)
 
     if not user:

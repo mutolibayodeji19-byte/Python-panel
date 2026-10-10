@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Temporary Control Center</title>
+  <style>
+    body { background:#0b1020; color:#edf2ff; font-family:Arial,sans-serif;
+           margin:0; padding:24px; }
+    main { max-width:620px; margin:40px auto; background:#151d33;
+           padding:24px; border-radius:16px; }
+    a { color:#7dd3fc; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>ZENTRA Control Center</h1>
+  <p>You have limited temporary access.</p>
+  {% if grant and grant.access_expires_at %}
+    <p>Access expires: {{ grant.access_expires_at }} UTC</p>
+  {% else %}
+    <p>Owner account detected. Your permanent admin access is unchanged.</p>
+  {% endif %}
+  <p>This page does not expose the user list or API keys.</p>
+  <p><a href="{{ url_for('control_access.request_access') }}">Access request status</a></p>
+</main>
+</body>
+</html>

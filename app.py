@@ -100,7 +100,9 @@ def create_owner():
 
 
 from routes.hosting import hosting
+from routes.control_access import control_access
 app.register_blueprint(hosting)
+app.register_blueprint(control_access)
 
 with app.app_context():
     db.create_all()
