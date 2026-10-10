@@ -5,3 +5,4 @@ Werkzeug
 PyJWT
 
 gunicorn
+Flask-Limiter
