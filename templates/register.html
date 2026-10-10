@@ -8,39 +8,34 @@
 
 <h1>Create Account</h1>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <p role="alert">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+<form method="POST">
 
-<form method="POST" action="{{ url_for('auth.register') }}">
-    <div aria-hidden="true"
-         style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;">
-        <label for="website">Leave this field empty</label>
-        <input id="website" name="website" type="text"
-               tabindex="-1" autocomplete="off">
-    </div>
+    <input
+        name="username"
+        placeholder="Username"
+        required
+    >
 
-    <input name="username" placeholder="Username"
-           minlength="3" maxlength="30"
-           pattern="[A-Za-z0-9_-]+"
-           autocomplete="username" required>
+    <input
+        name="email"
+        type="email"
+        placeholder="Email"
+        required
+    >
 
-    <input name="email" type="email" placeholder="Email"
-           maxlength="120" autocomplete="email" required>
-
-    <input name="password" type="password" placeholder="Password"
-           minlength="10" maxlength="128"
-           autocomplete="new-password" required>
+    <input
+        name="password"
+        type="password"
+        placeholder="Password"
+        required
+    >
 
     <button type="submit">Register</button>
+
 </form>
 
 <p>
-    <a href="{{ url_for('auth.login') }}">Already have an account? Login</a>
+    <a href="/login">Already have an account? Login</a>
 </p>
 
 </body>

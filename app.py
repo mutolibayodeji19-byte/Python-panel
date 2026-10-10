@@ -4,7 +4,6 @@ from flask import Flask
 from flask_login import LoginManager
 
 from config import Config
-from extensions import limiter
 from database.database import db
 from database.models import User
 from database.api_models import APIKey
@@ -13,7 +12,6 @@ from database.feature_models import UptimeMonitor, WhatsAppBot
 
 app = Flask(__name__)
 app.config.from_object(Config)
-limiter.init_app(app)
 
 db.init_app(app)
 
