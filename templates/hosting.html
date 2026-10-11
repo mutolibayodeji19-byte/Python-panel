@@ -3,52 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PRIME ZENITH | Hosting</title>
+<title>Servers | PRIME ZENITH</title>
 <style>
-:root{color-scheme:dark;--bg:#080b14;--panel:#101827;--line:#263247;--text:#edf3ff;--muted:#94a3b8;--blue:#4f8cff;--green:#38d996}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,Arial,sans-serif}
-header{padding:20px 5%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}
-a{color:#8bb4ff;text-decoration:none}main{max-width:1100px;margin:auto;padding:26px 18px}
-h1{font-size:25px;margin:0}h2{font-size:18px}.muted{color:var(--muted)}.panel,.server{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:18px;margin:16px 0}
-input,select,button{font:inherit;padding:12px;border-radius:9px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:100%;margin:5px 0}
-button{background:var(--blue);color:white;font-weight:700;border:0;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.pill{font-size:12px;border:1px solid var(--line);border-radius:30px;padding:5px 9px;color:var(--green)}
-.flash{padding:10px;background:#15253a;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
+:root{color-scheme:dark;--bg:#0b0e14;--side:#10141d;--card:#141a25;--line:#273142;--text:#e8edf5;--muted:#8793a7;--blue:#5865f2;--green:#36c98f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,Arial}
+a{color:#9ca8ff;text-decoration:none}.layout{display:flex;min-height:100vh}
+aside{width:220px;background:var(--side);border-right:1px solid var(--line);padding:25px 15px;flex-shrink:0}
+.brand{font-size:17px;font-weight:800;margin:0 8px 32px}.brand span{color:#8590ff}
+.nav{display:block;padding:12px;border-radius:8px;color:var(--muted);margin:5px 0}.nav.active,.nav:hover{background:#252b42;color:white}
+main{padding:28px;width:100%;max-width:1200px;margin:auto}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:20px}
+h1{font-size:25px;margin:0}h2{font-size:17px;margin-top:0}.muted{color:var(--muted)}.small{font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:19px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.server{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.server h3{margin:0;font-size:17px;overflow-wrap:anywhere}
+.pill{font-size:11px;border:1px solid #644e37;color:#ffca88;background:#33271c;padding:5px 8px;border-radius:20px}
+.meta{color:var(--muted);font-size:12px;margin:12px 0 18px}
+input,select,button{width:100%;padding:12px;margin:5px 0;background:#0d121c;color:var(--text);border:1px solid var(--line);border-radius:8px;font:inherit}
+button,.btn{background:var(--blue);color:white;border:0;font-weight:700;cursor:pointer;display:inline-block;text-align:center;padding:12px;border-radius:8px}
+.flash{padding:12px;background:#1c2940;border-radius:8px;margin:10px 0;overflow-wrap:anywhere}
 @media(min-width:650px){form.create{display:grid;grid-template-columns:2fr 1fr auto;gap:10px;align-items:center}form.create button{width:auto}}
+@media(max-width:600px){aside{width:62px;padding:20px 6px}.brand{font-size:0;margin:0 0 25px}.brand span{font-size:17px}.nav{font-size:0;text-align:center;padding:13px 2px}.nav:first-letter{font-size:17px}main{padding:18px 12px}}
 </style>
 </head>
-<body>
-<header><strong>⚡ PRIME ZENITH <span class="muted">/ HOSTING</span></strong><a href="/">← Main dashboard</a></header>
+<body><div class="layout">
+<aside>
+<div class="brand">PRIME <span>ZENITH</span></div>
+<a class="nav" href="/">⌂ Dashboard</a>
+<a class="nav active" href="{{ url_for('hosting.index') }}">▣ Servers</a>
+<a class="nav" href="/">◈ Account</a>
+<div class="small muted" style="margin:28px 10px">HOSTING PANEL</div>
+</aside>
 <main>
-<h1>Hosting Control</h1>
-<p class="muted">Manage Python and Node.js projects in one place.</p>
+<div class="top"><div><h1>Servers</h1><p class="muted">Manage your hosted applications.</p></div><span class="pill">WORKER STATUS: UNVERIFIED</span></div>
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% for category, message in messages %}<div class="flash">{{ message }}</div>{% endfor %}
 {% endwith %}
-<section class="panel">
-<h2>＋ Create a project</h2>
+<section class="card">
+<h2>Create a server</h2>
 <form class="create" method="post" action="{{ url_for('hosting.create') }}">
-<input name="name" maxlength="80" placeholder="Project name" required>
-<select name="runtime" required><option value="python">Python bot</option><option value="node">Node.js / WhatsApp bot</option></select>
-<button type="submit">Create project</button>
+<input name="name" maxlength="80" placeholder="Server name" required>
+<select name="runtime" required><option value="python">Python</option><option value="node">Node.js</option></select>
+<button type="submit">＋ Create server</button>
 </form>
 </section>
-<h2>Your projects</h2>
+<h2>Your servers</h2>
 {% if servers %}
 <div class="grid">
 {% for server in servers %}
 <article class="server">
-<div class="row"><strong>{{ server.name }}</strong><span class="pill">Worker not connected</span></div>
-<p class="muted">{{ server.runtime|upper }} · Project #{{ server.id }}</p>
-<p class="muted">Created {{ server.created_at.strftime('%Y-%m-%d') }}</p>
-<a href="{{ url_for('hosting.detail', server_id=server.id) }}">Manage files & settings →</a>
+<div style="display:flex;justify-content:space-between;gap:8px;align-items:start">
+<h3>{{ server.name }}</h3><span class="pill">Offline / Unknown</span>
+</div>
+<p class="meta">{{ server.runtime|upper }} · Server ID {{ server.id }}<br>Created {{ server.created_at.strftime('%Y-%m-%d') }}</p>
+<a class="btn" style="display:block" href="{{ url_for('hosting.detail', server_id=server.id) }}">Manage server →</a>
 </article>
 {% endfor %}
 </div>
 {% else %}
-<div class="panel muted">No projects yet. Create your first Python or Node.js project above.</div>
+<div class="card muted">No servers yet. Create one above to get started.</div>
 {% endif %}
-<p class="muted">Execution and live CPU/RAM readings are unavailable until a real worker is connected. This panel does not claim uploaded projects are running.</p>
-</main>
-</body>
-</html>
+<p class="small muted">Server execution and live resource usage require a connected execution worker. Status is not confirmed by this page.</p>
+</main></div></body></html>

@@ -5,51 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ server.name }} | PRIME ZENITH</title>
 <style>
-:root{color-scheme:dark;--bg:#080b14;--panel:#101827;--line:#263247;--text:#edf3ff;--muted:#94a3b8;--blue:#4f8cff;--red:#e65c70}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,Arial,sans-serif}
-header{padding:20px 5%;border-bottom:1px solid var(--line)}main{max-width:1000px;margin:auto;padding:24px 16px}
-a{color:#8bb4ff;text-decoration:none}.muted{color:var(--muted)}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px;margin:15px 0}
-input,button{font:inherit;width:100%;padding:12px;margin:6px 0;border:1px solid var(--line);border-radius:9px;background:#0b1220;color:var(--text)}
-button{background:var(--blue);border:0;font-weight:700;cursor:pointer}.danger{background:#662938}.flash{padding:10px;background:#15253a;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
-.file{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center;overflow-wrap:anywhere}
-.file form{margin:0}.file button{width:auto;margin:0;padding:7px 10px;background:#662938}.small{font-size:12px}
+:root{color-scheme:dark;--bg:#0b0e14;--side:#10141d;--card:#141a25;--line:#273142;--text:#e8edf5;--muted:#8793a7;--blue:#5865f2;--green:#36c98f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,Arial}
+a{color:#a4afff;text-decoration:none}.layout{display:flex;min-height:100vh}
+aside{width:220px;background:var(--side);border-right:1px solid var(--line);padding:24px 14px;flex-shrink:0}
+.brand{font-weight:800;font-size:16px;margin:0 8px 30px}.brand span{color:#8590ff}
+.nav{display:block;padding:12px;border-radius:8px;color:var(--muted);margin:5px 0}.nav.active,.nav:hover{background:#252b42;color:white}
+main{width:100%;max-width:1200px;margin:auto;padding:26px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:18px}
+h1{font-size:24px;margin:0;overflow-wrap:anywhere}h2{font-size:16px;margin:0 0 15px}.muted{color:var(--muted)}.small{font-size:12px}
+.status{border:1px solid #684b36;color:#ffca88;background:#33271c;padding:7px 10px;border-radius:20px;font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:20px 0}
+.stat,.card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:17px}
+.stat strong{display:block;font-size:18px;margin-top:7px}.stat span{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,350px),1fr));gap:15px}
+input,button{font:inherit;width:100%;padding:11px;margin:5px 0;background:#0d121c;color:var(--text);border:1px solid var(--line);border-radius:8px}
+button{background:var(--blue);border:0;font-weight:700;cursor:pointer}
+.danger{background:#702c3b}.flash{padding:11px;background:#1c2940;border-radius:8px;margin:10px 0;overflow-wrap:anywhere}
+.file{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.file form{margin:0;flex-shrink:0}.file button{width:auto;background:#702c3b;padding:7px 10px}
+.console{background:#070a10;border:1px solid var(--line);border-radius:8px;padding:15px;color:#94a3b8;min-height:105px;font-family:monospace;line-height:1.7}
+@media(max-width:600px){aside{width:60px;padding:18px 5px}.brand{font-size:0;margin:0 0 25px}.brand span{font-size:16px}.nav{font-size:0;text-align:center;padding:13px 2px}.nav:first-letter{font-size:17px}main{padding:17px 11px}}
 </style>
 </head>
-<body>
-<header><strong>⚡ PRIME ZENITH / {{ server.name }}</strong><p><a href="{{ url_for('hosting.index') }}">← All projects</a></p></header>
+<body><div class="layout">
+<aside>
+<div class="brand">PRIME <span>ZENITH</span></div>
+<a class="nav" href="/">⌂ Dashboard</a>
+<a class="nav active" href="{{ url_for('hosting.index') }}">▣ Servers</a>
+<a class="nav active" href="#console">⌁ Console</a>
+<a class="nav" href="#files">▤ Files</a>
+<a class="nav" href="#startup">⚙ Startup</a>
+</aside>
 <main>
-<h1>{{ server.name }}</h1>
-<p class="muted">{{ server.runtime|upper }} · Project #{{ server.id }}</p>
+<div class="top">
+<div><p class="small muted">SERVERS / {{ server.id }}</p><h1>{{ server.name }}</h1><p class="muted">{{ server.runtime|upper }} application</p></div>
+<span class="status">● Worker not connected</span>
+</div>
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% for category, message in messages %}<div class="flash">{{ message }}</div>{% endfor %}
 {% endwith %}
-<div class="panel">
-<h2>Server status</h2>
-<p>Worker: <strong>Not connected</strong></p>
-<p class="muted">Start/Stop and live CPU/RAM metrics are disabled until a real hosting worker is connected.</p>
+<div class="stats">
+<div class="stat"><span>SERVER STATUS</span><strong>Unknown</strong></div>
+<div class="stat"><span>CPU USAGE</span><strong>—</strong></div>
+<div class="stat"><span>MEMORY</span><strong>—</strong></div>
+<div class="stat"><span>DISK USAGE</span><strong>{{ files|length }} files</strong></div>
 </div>
-<div class="panel">
-<h2>Upload files</h2>
-<p class="muted">Choose individual files or a ZIP archive. Request limit: 25 MB; ZIP extraction limit: 50 MB.</p>
+<div class="grid">
+<section class="card" id="console">
+<h2>⌁ Console</h2>
+<div class="console">[PRIME ZENITH] Waiting for execution worker...<br>Console unavailable until the worker is connected.</div>
+<p class="small muted">Live logs and command input will be enabled after worker execution is implemented.</p>
+</section>
+<section class="card" id="startup">
+<h2>⚙ Startup configuration</h2>
+<form method="post" action="{{ url_for('hosting.settings', server_id=server.id) }}">
+<label for="startup">Startup command</label>
+<input id="startup" name="startup_command" maxlength="500" value="{{ server.startup_command }}" required>
+<p class="small muted">Python: python main.py · Node.js: node index.js</p>
+<button type="submit">Save startup command</button>
+</form>
+</section>
+<section class="card" id="files">
+<h2>▤ Upload files</h2>
+<p class="small muted">Select files or a ZIP archive. Upload limit: 25 MB; ZIP extraction limit: 50 MB.</p>
 <form method="post" enctype="multipart/form-data" action="{{ url_for('hosting.upload', server_id=server.id) }}">
 <input type="file" name="files" multiple required>
-<button type="submit">Upload selected files</button>
+<button type="submit">Upload files</button>
 </form>
+</section>
+<section class="card">
+<h2>Server power</h2>
+<p class="muted">Start, stop, and restart are unavailable because no verified execution connection is active.</p>
+<button type="button" disabled style="opacity:.5;cursor:not-allowed">Start</button>
+<button type="button" disabled style="opacity:.5;cursor:not-allowed">Restart</button>
+<button type="button" disabled style="opacity:.5;cursor:not-allowed">Stop</button>
+</section>
 </div>
-<div class="panel">
-<h2>Startup command</h2>
-<form method="post" action="{{ url_for('hosting.settings', server_id=server.id) }}">
-<input name="startup_command" maxlength="500" value="{{ server.startup_command }}" required>
-<button type="submit">Save startup settings</button>
-</form>
-<p class="muted">Python example: <code>python main.py</code>. Node.js example: <code>node index.js</code>. Saving this command does not execute it.</p>
-</div>
-<div class="panel">
-<h2>Project files ({{ files|length }})</h2>
+<section class="card">
+<h2>▤ Server files ({{ files|length }})</h2>
 {% if files %}
 {% for file in files %}
 <div class="file">
-<div><div>{{ file.name }}</div><div class="muted small">{{ file.size }} bytes</div></div>
+<div><strong>{{ file.name }}</strong><div class="small muted">{{ file.size }} bytes</div></div>
 <form method="post" action="{{ url_for('hosting.delete_file', server_id=server.id) }}" onsubmit="return confirm('Delete this file?')">
 <input type="hidden" name="name" value="{{ file.name }}">
 <button type="submit">Delete</button>
@@ -59,14 +97,13 @@ button{background:var(--blue);border:0;font-weight:700;cursor:pointer}.danger{ba
 {% else %}
 <p class="muted">No files uploaded yet.</p>
 {% endif %}
-</div>
-<div class="panel">
-<h2>Delete project</h2>
-<p class="muted">Permanently deletes this project and its uploaded files.</p>
-<form method="post" action="{{ url_for('hosting.delete_server', server_id=server.id) }}" onsubmit="return confirm('Delete this project and all its files?')">
-<button class="danger" type="submit">Delete project</button>
+</section>
+<section class="card">
+<h2>Danger zone</h2>
+<p class="muted">Permanently delete this server and its uploaded files.</p>
+<form method="post" action="{{ url_for('hosting.delete_server', server_id=server.id) }}" onsubmit="return confirm('Delete this server and all its files?')">
+<button class="danger" type="submit">Delete server</button>
 </form>
-</div>
-</main>
-</body>
-</html>
+</section>
+<p><a href="{{ url_for('hosting.index') }}">← Back to servers</a></p>
+</main></div></body></html>
