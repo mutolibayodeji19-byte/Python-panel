@@ -201,6 +201,98 @@
             .analytics-grid { grid-template-columns: 1fr; }
         }
 
+
+        /* PRIME ZENITH neon workspace */
+        :root {
+            color-scheme: dark;
+            --zenith-bg: #07070d;
+            --zenith-panel: #10101b;
+            --zenith-border: #29213c;
+            --zenith-violet: #a855f7;
+            --zenith-cyan: #22d3ee;
+            --zenith-green: #4ade80;
+            --zenith-muted: #a5a3b8;
+        }
+        body { background: var(--zenith-bg); color: #f7f5ff; }
+        .sidebar {
+            background: #0b0a13;
+            border-right: 1px solid var(--zenith-border);
+        }
+        .logo span { color: var(--zenith-violet); }
+        .nav a { transition: background .18s, color .18s; }
+        .nav a:hover, .nav .active {
+            background: #211432;
+            color: #fff;
+            box-shadow: inset 3px 0 var(--zenith-violet);
+        }
+        .card, .panel {
+            background: linear-gradient(145deg, #12111e, #0d0c15);
+            border-color: var(--zenith-border);
+            box-shadow: 0 8px 28px #0003;
+        }
+        .status { background: #10251d; color: var(--zenith-green); }
+        .muted, .subtext, .card .label { color: var(--zenith-muted); }
+        a { color: var(--zenith-cyan); }
+        input, select, textarea {
+            width: 100%; max-width: 100%; padding: 11px 12px;
+            margin: 6px 0 12px; border-radius: 9px;
+            border: 1px solid #39304d; background: #090912;
+            color: #f7f5ff; font: inherit;
+        }
+        input[type="file"] { padding: 9px; }
+        button, .zenith-button {
+            display: inline-block; border: 1px solid #7040a4;
+            background: #54218a; color: white; border-radius: 9px;
+            padding: 10px 14px; font-weight: 700; cursor: pointer;
+            text-decoration: none; font: inherit;
+        }
+        button:hover, .zenith-button:hover { background: #6d28a8; }
+        button:disabled {
+            opacity: .42; cursor: not-allowed;
+            border-color: #464052; background: #25212e;
+        }
+        .zenith-workspace { margin: 30px 0; scroll-margin-top: 20px; }
+        .zenith-workspace h2 { margin-top: 0; }
+        .zenith-grid {
+            display: grid; grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 16px; margin-top: 16px;
+        }
+        .zenith-grid > .panel { min-width: 0; }
+        .zenith-tag {
+            display: inline-block; padding: 5px 9px; border-radius: 7px;
+            background: #201432; color: #d8b4fe; font-size: 12px;
+        }
+        .zenith-cyan { color: var(--zenith-cyan); }
+        .zenith-green { color: var(--zenith-green); }
+        .zenith-file {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; padding: 10px 0; border-bottom: 1px solid #29213c;
+            overflow-wrap: anywhere;
+        }
+        .zenith-file form { flex-shrink: 0; }
+        .zenith-file button { padding: 6px 9px; font-size: 12px; }
+        .zenith-console {
+            background: #06060b; border: 1px solid #29213c; border-radius: 10px;
+            padding: 15px; min-height: 130px; color: #a5f3fc;
+            font-family: monospace; white-space: pre-wrap; overflow-wrap: anywhere;
+        }
+        .zenith-notice {
+            border: 1px solid #51406a; background: #191124;
+            color: #e9d5ff; border-radius: 9px; padding: 12px;
+        }
+        @media (max-width: 900px) {
+            .cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
+            .zenith-grid { grid-template-columns: minmax(0,1fr); }
+        }
+        @media (max-width: 640px) {
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .logout { position: static; margin-top: 15px; }
+            .main { margin-left: 0; padding: 16px; }
+            .top { align-items: flex-start; flex-direction: column; }
+            .cards { grid-template-columns: minmax(0,1fr); }
+            .zenith-file { align-items: flex-start; }
+        }
+
     </style>
 </head>
 <body>
@@ -211,6 +303,7 @@
         <a href="/api-keys/">🔑 API Keys</a>
         <a href="/tools/uptime">📡 Uptime Monitor</a>
         <a href="/tools/whatsapp">🤖 WhatsApp Manager</a>
+        <a href="#hosting-workspace">▣ Server Console</a>
     </nav>
     <div class="logout"><a href="/logout">🚪 Logout</a></div>
 </aside>
@@ -384,6 +477,111 @@
             <p><a href="/api-keys/">Open API key management →</a></p>
         </div>
     </section>
+
+    <section class="zenith-workspace" id="hosting-workspace">
+        <div class="panel">
+            <h2>▣ Server Console <span class="zenith-tag">ZENITH NODE</span></h2>
+            <p class="subtext">Manage your Python and Node.js project files from one workspace.</p>
+
+            {% if hosting_servers %}
+            <form method="get" action="/">
+                <label for="zenith-server"><strong>Select project</strong></label>
+                <select id="zenith-server" name="server" onchange="this.form.submit()">
+                    {% for server in hosting_servers %}
+                    <option value="{{ server.id }}" {% if selected_server and server.id == selected_server.id %}selected{% endif %}>
+                        {{ server.name }} · {{ server.runtime|upper }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <noscript><button type="submit">Open project</button></noscript>
+            </form>
+            {% endif %}
+        </div>
+
+        {% if selected_server %}
+        <div class="zenith-grid">
+            <div class="panel">
+                <h2>{{ selected_server.name }}</h2>
+                <p><span class="zenith-tag">{{ selected_server.runtime|upper }}</span>
+                   <span class="zenith-tag">ID {{ selected_server.id }}</span></p>
+                <p class="subtext">Created:
+                    {{ selected_server.created_at.strftime('%d %b %Y') if selected_server.created_at else 'Unknown' }}
+                </p>
+                <p class="zenith-notice">Project files are available. Runtime execution is not connected yet.</p>
+
+                <h3>Upload files</h3>
+                <form method="post" enctype="multipart/form-data"
+                      action="{{ url_for('hosting.upload', server_id=selected_server.id) }}">
+                    <input type="hidden" name="return_to" value="dashboard">
+                    <input type="file" name="files" multiple required>
+                    <button type="submit">Upload files / ZIP</button>
+                </form>
+
+                <h3>Startup command</h3>
+                <form method="post"
+                      action="{{ url_for('hosting.settings', server_id=selected_server.id) }}">
+                    <input type="hidden" name="return_to" value="dashboard">
+                    <label for="startup-command">Command to run when execution is available</label>
+                    <input id="startup-command" name="startup_command" maxlength="500"
+                           value="{{ selected_server.startup_command }}" required>
+                    <button type="submit">Save startup settings</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <h2>Project Files <span class="zenith-tag">{{ selected_files|length }} listed</span></h2>
+                {% for file in selected_files %}
+                <div class="zenith-file">
+                    <div>
+                        <div>{{ file.name }}</div>
+                        <small class="subtext">{{ (file.size / 1024)|round(1) }} KB</small>
+                    </div>
+                    <form method="post"
+                          action="{{ url_for('hosting.delete_file', server_id=selected_server.id) }}"
+                          onsubmit="return confirm('Delete this file? This cannot be undone.');">
+                        <input type="hidden" name="return_to" value="dashboard">
+                        <input type="hidden" name="name" value="{{ file.name }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </div>
+                {% else %}
+                <p class="subtext">No files yet. Upload a file or ZIP to get started.</p>
+                {% endfor %}
+                <p><a href="{{ url_for('hosting.detail', server_id=selected_server.id) }}">Open full project page →</a></p>
+            </div>
+
+            <div class="panel">
+                <h2>Console</h2>
+                <div class="zenith-console">PRIME ZENITH :: PROJECT {{ selected_server.id }}
+Status: Execution unavailable
+Console: Waiting for worker execution support...</div>
+                <p class="subtext">This display is not a live terminal. Commands cannot run until a secure worker execution endpoint is implemented.</p>
+                <form onsubmit="return false;">
+                    <input aria-label="Console command" placeholder="Console commands unavailable" disabled>
+                    <button type="button" disabled>Send command</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <h2>Power Controls</h2>
+                <p class="zenith-notice">Worker execution is not connected. These controls are disabled to prevent misleading status or actions.</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button type="button" disabled>Start</button>
+                    <button type="button" disabled>Restart</button>
+                    <button type="button" disabled>Stop</button>
+                </div>
+                <p class="subtext">Saving a startup command does not execute it.</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="panel">
+            <h2>No projects yet</h2>
+            <p class="subtext">Create your first Python or Node.js project to see it here.</p>
+            <a class="zenith-button" href="{{ url_for('hosting.index') }}">Create / manage projects →</a>
+        </div>
+        {% endif %}
+    </section>
+
 </main>
 
 <script>

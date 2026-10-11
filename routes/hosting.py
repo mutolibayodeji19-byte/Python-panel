@@ -29,6 +29,12 @@ def server_dir(server):
     return folder
 
 
+
+def server_action_redirect(server):
+    if request.form.get("return_to") == "dashboard":
+        return redirect(url_for("dashboard.home", server=server.id))
+    return redirect(url_for("hosting.detail", server_id=server.id))
+
 def get_server(server_id):
     server = db.session.get(HostingServer, server_id)
     if server is None:
@@ -139,13 +145,13 @@ def upload(server_id):
     server = get_server(server_id)
     if request.content_length and request.content_length > MAX_UPLOAD_BYTES:
         flash("Upload too large. Maximum request size is 25 MB.", "error")
-        return redirect(url_for("hosting.detail", server_id=server.id))
+        return server_action_redirect(server)
 
     folder = server_dir(server)
     uploaded = request.files.getlist("files")
     if not uploaded or all(not f.filename for f in uploaded):
         flash("Choose a file or ZIP first.", "error")
-        return redirect(url_for("hosting.detail", server_id=server.id))
+        return server_action_redirect(server)
 
     try:
         for file in uploaded:
@@ -168,7 +174,7 @@ def upload(server_id):
     except (ValueError, zipfile.BadZipFile, OSError) as exc:
         flash(f"Upload failed: {exc}", "error")
 
-    return redirect(url_for("hosting.detail", server_id=server.id))
+    return server_action_redirect(server)
 
 
 @hosting.route("/<int:server_id>/settings", methods=["POST"])
@@ -182,7 +188,7 @@ def settings(server_id):
         server.startup_command = command
         db.session.commit()
         flash("Startup command saved. It is not executed until a worker is connected.", "success")
-    return redirect(url_for("hosting.detail", server_id=server.id))
+    return server_action_redirect(server)
 
 
 @hosting.route("/<int:server_id>/delete-file", methods=["POST"])
@@ -198,7 +204,7 @@ def delete_file(server_id):
 
     target.unlink()
     flash("File deleted.", "success")
-    return redirect(url_for("hosting.detail", server_id=server.id))
+    return server_action_redirect(server)
 
 
 @hosting.route("/<int:server_id>/delete", methods=["POST"])

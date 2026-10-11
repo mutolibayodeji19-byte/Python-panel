@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta, timezone
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, current_app
+from pathlib import Path
 from flask_login import login_required, current_user
 from sqlalchemy import func, case
 
 from database.api_models import APIKey, APIUsage
+from database.hosting_models import HostingServer
 
 
 dashboard = Blueprint("dashboard", __name__)
@@ -143,6 +145,42 @@ def home():
             "last_request": last_request
         })
 
+    # Pterodactyl-style project workspace.
+    if getattr(current_user, "is_admin", False):
+        hosting_servers = HostingServer.query.order_by(
+            HostingServer.created_at.desc()
+        ).all()
+    else:
+        hosting_servers = HostingServer.query.filter_by(
+            owner_id=current_user.id
+        ).order_by(HostingServer.created_at.desc()).all()
+
+    requested_server = request.args.get("server", type=int)
+    selected_server = next(
+        (item for item in hosting_servers if item.id == requested_server),
+        hosting_servers[0] if hosting_servers else None
+    )
+
+    selected_files = []
+    if selected_server:
+        folder = (
+            Path(current_app.instance_path)
+            / "hosting_data"
+            / str(selected_server.id)
+        )
+        if folder.is_dir():
+            for file_path in sorted(folder.rglob("*")):
+                if file_path.is_file() and not file_path.is_symlink():
+                    try:
+                        selected_files.append({
+                            "name": file_path.relative_to(folder).as_posix(),
+                            "size": file_path.stat().st_size
+                        })
+                    except OSError:
+                        continue
+                if len(selected_files) >= 500:
+                    break
+
     return render_template(
         "dashboard.html",
         user=current_user,
@@ -155,7 +193,10 @@ def home():
         api_total_24h=api_total_24h,
         daily_stats=daily_stats,
         chart_max=chart_max,
-        key_stats=key_stats
+        key_stats=key_stats,
+        hosting_servers=hosting_servers,
+        selected_server=selected_server,
+        selected_files=selected_files
     )
 
 
