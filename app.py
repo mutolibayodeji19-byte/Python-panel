@@ -31,6 +31,7 @@ from routes.admin import admin
 from routes.api_keys import api_keys
 from routes.api import api
 from routes.features import features
+from routes.worker import worker
 
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
@@ -38,6 +39,7 @@ app.register_blueprint(admin)
 app.register_blueprint(api_keys)
 app.register_blueprint(api)
 app.register_blueprint(features)
+app.register_blueprint(worker)
 
 
 @app.route("/version", methods=["GET"])
