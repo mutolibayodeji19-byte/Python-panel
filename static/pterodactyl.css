@@ -1,0 +1,70 @@
+
+:root {
+  color-scheme: dark;
+  --pz-bg: #0b0d14;
+  --pz-panel: #121622;
+  --pz-panel2: #171c2b;
+  --pz-border: #292f42;
+  --pz-text: #edf0fa;
+  --pz-muted: #929bb2;
+  --pz-accent: #7567ff;
+  --pz-cyan: #39d5ed;
+}
+html { background: var(--pz-bg) !important; }
+body {
+  background: radial-gradient(ellipse at top left, #171a35 0, transparent 42%), var(--pz-bg) !important;
+  color: var(--pz-text) !important;
+  font-family: Inter, system-ui, -apple-system, sans-serif !important;
+}
+h1,h2,h3,h4 { color: var(--pz-text) !important; letter-spacing: -.35px; }
+p,small,label,.muted { color: var(--pz-muted); }
+a { transition: color .18s ease, background .18s ease; }
+input,select,textarea {
+  background: #0b0e17 !important;
+  color: var(--pz-text) !important;
+  border: 1px solid var(--pz-border) !important;
+  border-radius: 9px !important;
+  max-width: 100%;
+}
+button,.btn {
+  border-radius: 9px !important;
+  transition: transform .15s ease, filter .15s ease;
+}
+button:hover,.btn:hover { filter: brightness(1.12); }
+.card,.stat-card,.panel,.server-card,.workspace-card,.box,.section,
+[class*="card"],[class*="panel"],[class*="widget"] {
+  border-color: var(--pz-border) !important;
+}
+.card,.stat-card,.panel,.server-card,.workspace-card,.box {
+  background: linear-gradient(145deg, var(--pz-panel2), var(--pz-panel)) !important;
+  border: 1px solid var(--pz-border) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 28px #00000018;
+}
+nav a,.sidebar a,.nav-link {
+  border-radius: 8px;
+}
+nav a:hover,.sidebar a:hover,.nav-link:hover {
+  background: #7567ff18 !important;
+  color: #b8b1ff !important;
+}
+table { border-color: var(--pz-border) !important; }
+th { color: var(--pz-muted) !important; }
+td,th { border-color: var(--pz-border) !important; }
+pre,code,.console,.terminal {
+  background: #080a10 !important;
+  border-color: var(--pz-border) !important;
+  border-radius: 10px;
+}
+hr { border-color: var(--pz-border) !important; }
+img,video,iframe { max-width: 100%; }
+@media(max-width:700px) {
+  body { overflow-x: hidden; }
+  main,.main,.content,.container,.page-content {
+    max-width: 100%;
+  }
+  .card,.stat-card,.panel,.server-card,.workspace-card {
+    border-radius: 11px !important;
+  }
+  input,select,textarea,button,.btn { font-size: 14px; }
+}
