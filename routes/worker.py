@@ -56,16 +56,17 @@ def pterodactyl_request(endpoint):
             return data, None, response.status
 
     except HTTPError as exc:
-        if exc.code == 401:
-            message = "API key is invalid or unauthorized."
-        elif exc.code == 403:
-            message = "API key lacks permission for this endpoint."
-        elif exc.code == 404:
-            message = "Pterodactyl API endpoint was not found."
-        else:
-            message = "Pterodactyl returned HTTP " + str(exc.code)
+        try:
+            preview = exc.read(300).decode("utf-8", "replace")
+        except Exception:
+            preview = ""
 
-        return None, {"error": message}, exc.code
+        return None, {
+            "error": "Pterodactyl API returned HTTP " + str(exc.code),
+            "http_status": exc.code,
+            "content_type": exc.headers.get("Content-Type", ""),
+            "response_preview": preview[:200],
+        }, exc.code
 
     except (URLError, TimeoutError, OSError) as exc:
         return None, {
