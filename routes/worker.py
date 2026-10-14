@@ -73,9 +73,10 @@ def pterodactyl_request(endpoint):
             "detail": str(exc)[:200],
         }, 502
 
-    except (ValueError, UnicodeDecodeError):
+    except Exception as exc:
         return None, {
-            "error": "Pterodactyl returned an invalid response."
+            "error": "Pterodactyl request failed unexpectedly.",
+            "detail": type(exc).__name__ + ": " + str(exc)[:200],
         }, 502
 
 
