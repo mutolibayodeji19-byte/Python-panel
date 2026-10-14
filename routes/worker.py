@@ -42,7 +42,17 @@ def pterodactyl_request(endpoint):
 
     try:
         with urlopen(req, timeout=15) as response:
-            data = json.loads(response.read().decode("utf-8"))
+            body = response.read()
+            content_type = response.headers.get("Content-Type", "")
+            try:
+                data = json.loads(body.decode("utf-8"))
+            except (ValueError, UnicodeDecodeError):
+                return None, {
+                    "error": "Pterodactyl returned non-JSON data.",
+                    "http_status": response.status,
+                    "content_type": content_type,
+                    "response_preview": body[:160].decode("utf-8", "replace"),
+                }, 502
             return data, None, response.status
 
     except HTTPError as exc:
