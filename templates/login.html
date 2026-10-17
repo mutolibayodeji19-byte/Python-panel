@@ -1,30 +1,419 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Python Panel</title>
+    <meta name="theme-color" content="#050b19">
+    <title>Secure Access | PRIME ZENITH</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            color-scheme: dark;
+            --blue: #39cfff;
+            --blue-bright: #1687ff;
+            --gold: #e9c77b;
+            --muted: #a3b4cb;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            margin: 0;
+            padding: 24px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            background: #050b19;
+            color: #f4f8ff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Arial, sans-serif;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                linear-gradient(100deg, rgba(2, 7, 19, .94) 0%,
+                    rgba(3, 12, 30, .80) 48%,
+                    rgba(4, 8, 21, .55) 100%),
+                url("/static/images/zenith-login.svg") center / cover no-repeat;
+            z-index: -2;
+            transform: scale(1.02);
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 15% 15%,
+                    rgba(0, 132, 255, .16), transparent 48%),
+                radial-gradient(ellipse at 85% 80%,
+                    rgba(214, 165, 71, .10), transparent 42%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shell {
+            width: 100%;
+            max-width: 430px;
+            animation: appear .7s ease both;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .brand-mark {
+            width: 62px;
+            height: 62px;
+            margin: 0 auto 15px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(233, 199, 123, .65);
+            border-radius: 21px;
+            background: linear-gradient(145deg,
+                rgba(16, 44, 79, .95), rgba(5, 11, 26, .95));
+            box-shadow: 0 0 30px rgba(20, 144, 255, .20),
+                        inset 0 0 18px rgba(44, 172, 255, .09);
+            color: var(--gold);
+            font-size: 28px;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: clamp(23px, 6vw, 30px);
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .brand h1 span {
+            color: var(--blue);
+            text-shadow: 0 0 22px rgba(57, 207, 255, .45);
+        }
+
+        .brand p {
+            margin: 9px 0 0;
+            color: var(--gold);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+        }
+
+        .card {
+            padding: 30px 25px;
+            border: 1px solid rgba(91, 174, 255, .29);
+            border-radius: 25px;
+            background: linear-gradient(145deg,
+                rgba(10, 23, 43, .91),
+                rgba(4, 10, 24, .94));
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .48),
+                        0 0 35px rgba(0, 128, 255, .09),
+                        inset 0 1px rgba(255, 255, 255, .055);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+        }
+
+        .access-label {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 9px;
+            color: var(--blue);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .online-dot {
+            width: 7px;
+            height: 7px;
+            flex: 0 0 7px;
+            border-radius: 50%;
+            background: #45edb1;
+            box-shadow: 0 0 12px rgba(69, 237, 177, .8);
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 27px;
+            letter-spacing: -.7px;
+        }
+
+        .subtitle {
+            margin: 9px 0 25px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .flash {
+            margin: 0 0 17px;
+            padding: 12px 13px;
+            border: 1px solid rgba(255, 91, 112, .38);
+            border-radius: 11px;
+            background: rgba(255, 64, 92, .09);
+            color: #ffabb7;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-bottom: 17px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #dce8f8;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .field input {
+            display: block;
+            width: 100%;
+            min-height: 51px;
+            padding: 14px;
+            border: 1px solid #263c59;
+            border-radius: 12px;
+            outline: none;
+            background: rgba(3, 9, 21, .76);
+            color: #fff;
+            font: inherit;
+            font-size: 14px;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .field input::placeholder {
+            color: #7588a3;
+        }
+
+        .field input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(57, 207, 255, .10),
+                        0 0 20px rgba(20, 135, 255, .10);
+        }
+
+        .password-input {
+            padding-right: 75px !important;
+        }
+
+        .show-password {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            color: var(--blue);
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .submit {
+            width: 100%;
+            min-height: 52px;
+            margin-top: 6px;
+            border: 1px solid rgba(255, 232, 174, .7);
+            border-radius: 13px;
+            background: linear-gradient(105deg, #0879ed, #159ffb 55%, #0864d4);
+            box-shadow: 0 8px 24px rgba(0, 119, 255, .23),
+                        inset 0 1px rgba(255, 255, 255, .25);
+            color: #fff;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            cursor: pointer;
+            transition: filter .2s, transform .2s;
+        }
+
+        .submit:hover {
+            filter: brightness(1.14);
+        }
+
+        .submit:active {
+            transform: scale(.985);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 23px 0 17px;
+            color: #71839d;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: #26354b;
+        }
+
+        .register {
+            display: block;
+            padding: 13px;
+            border: 1px solid rgba(233, 199, 123, .36);
+            border-radius: 12px;
+            color: var(--gold);
+            text-align: center;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: background .2s;
+        }
+
+        .register:hover {
+            background: rgba(233, 199, 123, .07);
+        }
+
+        .security-note {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            margin-top: 20px;
+            color: #91a3bc;
+            font-size: 11px;
+        }
+
+        .security-note span {
+            color: var(--gold);
+        }
+
+        .footer {
+            margin-top: 23px;
+            color: #8192aa;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-align: center;
+        }
+
+        @keyframes appear {
+            from { opacity: 0; transform: translateY(13px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 380px) {
+            body { padding: 20px 12px; }
+            .card { padding: 25px 19px; border-radius: 21px; }
+            .brand { margin-bottom: 20px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
 </head>
 <body>
+    <main class="shell">
+        <header class="brand">
+            <div class="brand-mark" aria-hidden="true">♛</div>
+            <h1>PRIME <span>ZENITH</span></h1>
+            <p>SECURE ACCESS PORTAL</p>
+        </header>
 
-<h1>Python Panel</h1>
+        <section class="card">
+            <div class="access-label">
+                <span class="online-dot"></span>
+                AUTHORIZED ACCESS
+            </div>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <p style="color: #ff6b6b; font-weight: bold;">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+            <h2>Welcome back.</h2>
+            <p class="subtitle">
+                Sign in to access your control panel and workspace.
+            </p>
 
-<form method="POST">
-    <input name="username" placeholder="Username" required>
-    <input name="password" type="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-</form>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash" role="alert">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-<p>
-    <a href="/register">Create account</a>
-</p>
+            <form method="POST">
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        placeholder="Enter your username"
+                        autocomplete="username"
+                        autocapitalize="none"
+                        spellcheck="false"
+                        required
+                    >
+                </div>
 
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <input
+                            class="password-input"
+                            id="password"
+                            name="password"
+                            type="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button class="show-password" type="button"
+                                id="toggle-password" aria-controls="password">
+                            SHOW
+                        </button>
+                    </div>
+                </div>
+
+                <button class="submit" type="submit">Unlock Dashboard →</button>
+            </form>
+
+            <div class="divider">NEW TO PRIME ZENITH?</div>
+            <a class="register" href="/register">Create an account ↗</a>
+
+            <div class="security-note">
+                <span>◆</span> Protected panel access
+            </div>
+        </section>
+
+        <footer class="footer">
+            PRIME ZENITH · BUILT FOR CONTROL
+        </footer>
+    </main>
+
+    <script>
+        (() => {
+            const password = document.getElementById('password');
+            const toggle = document.getElementById('toggle-password');
+
+            toggle.addEventListener('click', () => {
+                const reveal = password.type === 'password';
+                password.type = reveal ? 'text' : 'password';
+                toggle.textContent = reveal ? 'HIDE' : 'SHOW';
+            });
+        })();
+    </script>
 </body>
 </html>
