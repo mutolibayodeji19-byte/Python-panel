@@ -1,84 +1,139 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#020817"/>
-      <stop offset=".5" stop-color="#07152c"/>
-      <stop offset="1" stop-color="#100b1c"/>
-    </linearGradient>
-    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#fff0b0"/>
-      <stop offset=".3" stop-color="#b98b39"/>
-      <stop offset=".55" stop-color="#ffe6a0"/>
-      <stop offset="1" stop-color="#74501b"/>
-    </linearGradient>
-    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#071d42"/>
-      <stop offset=".45" stop-color="#0878ed"/>
-      <stop offset="1" stop-color="#030817"/>
-    </linearGradient>
-    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#38e8ff"/>
-      <stop offset=".5" stop-color="#087bff"/>
-      <stop offset="1" stop-color="#493dff"/>
-    </linearGradient>
-    <radialGradient id="glow">
-      <stop stop-color="#087bff" stop-opacity=".42"/>
-      <stop offset="1" stop-color="#087bff" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="blur">
-      <feGaussianBlur stdDeviation="45"/>
-    </filter>
-    <filter id="shadow">
-      <feGaussianBlur stdDeviation="20"/>
-    </filter>
-  </defs>
+<defs>
+  <linearGradient id="bg" x2="1" y2="1">
+    <stop stop-color="#020611"/>
+    <stop offset=".5" stop-color="#07152b"/>
+    <stop offset="1" stop-color="#100b1d"/>
+  </linearGradient>
+  <linearGradient id="cloak" x2="1" y2="1">
+    <stop stop-color="#18365c"/>
+    <stop offset=".5" stop-color="#080f20"/>
+    <stop offset="1" stop-color="#02050c"/>
+  </linearGradient>
+  <linearGradient id="gold" x2="1" y2="1">
+    <stop stop-color="#fff0bd"/>
+    <stop offset=".45" stop-color="#d7a746"/>
+    <stop offset="1" stop-color="#76501e"/>
+  </linearGradient>
+  <linearGradient id="blue" x2="1" y2="1">
+    <stop stop-color="#a5f6ff"/>
+    <stop offset=".4" stop-color="#20cfff"/>
+    <stop offset="1" stop-color="#0758ff"/>
+  </linearGradient>
+  <radialGradient id="aura">
+    <stop stop-color="#087bff" stop-opacity=".55"/>
+    <stop offset="1" stop-color="#087bff" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="glow">
+    <feGaussianBlur stdDeviation="15"/>
+  </filter>
+</defs>
 
-  <rect width="1200" height="1600" fill="url(#bg)"/>
-  <ellipse cx="800" cy="650" rx="500" ry="580" fill="url(#glow)"/>
-  <ellipse cx="250" cy="1150" rx="400" ry="350" fill="#a87524" opacity=".13" filter="url(#blur)"/>
+<rect width="1200" height="1600" fill="url(#bg)"/>
+<ellipse cx="800" cy="640" rx="520" ry="650" fill="url(#aura)"/>
 
-  <g fill="none" stroke-linecap="round">
-    <path d="M-100 850 Q250 450 650 720 T1320 420" stroke="#087bff" stroke-width="5" opacity=".8"/>
-    <path d="M-100 890 Q250 490 650 760 T1320 460" stroke="#35dfff" stroke-width="2" opacity=".6"/>
-    <path d="M-100 1120 Q250 820 600 1020 T1300 800" stroke="url(#metal)" stroke-width="3" opacity=".65"/>
-    <path d="M-100 1150 Q250 850 600 1050 T1300 830" stroke="#087bff" stroke-width="2" opacity=".5"/>
+<!-- Moon and cinematic atmosphere -->
+<circle cx="860" cy="390" r="210" fill="#138bff" opacity=".12"/>
+<circle cx="860" cy="390" r="160" fill="none" stroke="#4acfff" stroke-width="2" opacity=".35"/>
+<circle cx="860" cy="390" r="185" fill="none" stroke="#d7a746" stroke-width="1" opacity=".35"/>
+
+<!-- Energy arcs -->
+<g fill="none" stroke-linecap="round">
+  <path d="M-100 730 Q260 350 620 630 T1300 330" stroke="#087bff" stroke-width="5" opacity=".8"/>
+  <path d="M-100 765 Q260 385 620 665 T1300 365" stroke="#44dcff" stroke-width="2" opacity=".8"/>
+  <path d="M-100 1100 Q250 800 650 980 T1300 760" stroke="url(#gold)" stroke-width="3" opacity=".7"/>
+</g>
+
+<!-- Original masked shinobi character -->
+<g transform="translate(680 650)">
+  <!-- Back hair / hood -->
+  <path d="M-235 -110 L-290 -285 L-185 -250 L-220 -385
+           L-95 -310 L-40 -420 L35 -310 L160 -365
+           L145 -245 L255 -275 L205 -100
+           L190 170 L120 310 L-120 310 L-200 160Z"
+        fill="#030813" stroke="#183d68" stroke-width="7"/>
+
+  <!-- Hair highlights -->
+  <path d="M-220 -220 L-145 -165 L-185 -305
+           M-95 -300 L-65 -200
+           M110 -275 L70 -180
+           M190 -215 L130 -130"
+        fill="none" stroke="#1a83d8" stroke-width="8" opacity=".65"/>
+
+  <!-- Face -->
+  <path d="M-172 -150 Q-180 -55 -128 45 L-75 125
+           L75 125 L128 45 Q180 -55 172 -150
+           Q100 -235 0 -220 Q-100 -235 -172 -150Z"
+        fill="#111c30" stroke="url(#gold)" stroke-width="4"/>
+
+  <!-- Headband -->
+  <path d="M-180 -160 Q0 -220 180 -160 L170 -105 Q0 -150 -170 -105Z"
+        fill="url(#gold)" opacity=".9"/>
+  <path d="M-95 -150 L95 -150" stroke="#263a59" stroke-width="5"/>
+
+  <!-- Eyes -->
+  <path d="M-145 -65 Q-92 -110 -35 -65 Q-87 -30 -145 -65Z"
+        fill="#020711" stroke="#39dfff" stroke-width="4"/>
+  <path d="M35 -65 Q92 -110 145 -65 Q87 -30 35 -65Z"
+        fill="#020711" stroke="#39dfff" stroke-width="4"/>
+
+  <path d="M-125 -66 L-65 -67 L-90 -57Z" fill="url(#blue)"/>
+  <path d="M65 -67 L125 -66 L90 -57Z" fill="url(#blue)"/>
+
+  <path d="M-115 -66 L-65 -66 M65 -66 L115 -66"
+        stroke="#8ef6ff" stroke-width="6" filter="url(#glow)"/>
+
+  <!-- Face mask -->
+  <path d="M-120 -20 Q0 15 120 -20 L92 100
+           L0 150 L-92 100Z"
+        fill="#050b16" stroke="#254b73" stroke-width="4"/>
+  <path d="M-70 45 L-30 65 L-70 80
+           M70 45 L30 65 L70 80"
+        fill="none" stroke="url(#gold)" stroke-width="5"/>
+
+  <!-- Neck and shoulder armor -->
+  <path d="M-65 110 L-95 190 L-220 230 L-300 420
+           Q0 500 300 420 L220 230 L95 190 L65 110Z"
+        fill="url(#cloak)" stroke="#1b568c" stroke-width="6"/>
+
+  <path d="M-185 245 L-70 200 L0 275 L70 200
+           L185 245 L125 320 L0 360 L-125 320Z"
+        fill="#07162c" stroke="url(#gold)" stroke-width="4"/>
+
+  <path d="M-220 365 L-80 330 L0 385 L80 330 L220 365"
+        fill="none" stroke="#168cff" stroke-width="5"/>
+
+  <!-- Gold shoulder details -->
+  <path d="M-255 285 L-205 265 L-165 305
+           M255 285 L205 265 L165 305"
+        fill="none" stroke="url(#gold)" stroke-width="8"/>
+
+  <!-- Sword behind shoulder -->
+  <g transform="rotate(36)">
+    <rect x="215" y="-350" width="20" height="570" rx="8"
+          fill="url(#gold)"/>
+    <path d="M225 -350 L235 -300 L225 200 L215 -300Z"
+          fill="#b9edff" opacity=".8"/>
+    <rect x="190" y="160" width="70" height="18" rx="6"
+          fill="#182c49" stroke="url(#gold)" stroke-width="4"/>
+    <rect x="216" y="180" width="18" height="100" rx="6"
+          fill="#d7a746"/>
   </g>
+</g>
 
-  <g transform="translate(655 345) rotate(13)">
-    <rect x="-175" y="-330" width="370" height="720" rx="58" fill="#087bff" opacity=".3" filter="url(#shadow)"/>
-    <rect x="-190" y="-350" width="380" height="740" rx="58" fill="url(#metal)"/>
-    <rect x="-182" y="-342" width="364" height="724" rx="52" fill="#050913"/>
-    <rect x="-169" y="-329" width="338" height="698" rx="43" fill="url(#screen)"/>
+<!-- Gold sparks -->
+<g fill="url(#gold)">
+  <circle cx="245" cy="370" r="4"/>
+  <circle cx="375" cy="290" r="3"/>
+  <circle cx="1020" cy="520" r="4"/>
+  <circle cx="980" cy="920" r="3"/>
+  <circle cx="285" cy="1070" r="4"/>
+  <circle cx="880" cy="1180" r="3"/>
+  <circle cx="180" cy="760" r="2"/>
+  <circle cx="1050" cy="1100" r="2"/>
+</g>
 
-    <path d="M-165 -50 Q-40 -230 170 -130 L170 40 Q20 210 -165 140Z" fill="#0cb9ff" opacity=".22"/>
-    <path d="M-165 160 Q20 -40 170 110 L170 260 Q-20 380 -165 270Z" fill="#483bff" opacity=".35"/>
-
-    <path d="M-165 20 Q-20 -110 170 -180" fill="none" stroke="#4ee7ff" stroke-width="3" opacity=".9"/>
-    <path d="M-165 60 Q-20 -70 170 -140" fill="none" stroke="#ffffff" stroke-width="1.5" opacity=".45"/>
-
-    <rect x="-58" y="-316" width="116" height="27" rx="14" fill="#02050b"/>
-    <circle cx="34" cy="-302" r="5" fill="#16345d"/>
-
-    <g transform="translate(0 25)" fill="none" stroke="url(#metal)" stroke-width="4">
-      <circle r="78" opacity=".8"/>
-      <circle r="61" opacity=".65"/>
-      <path d="M-38 0 L-10 28 L42 -36" stroke="#55eaff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
-
-    <rect x="-176" y="-165" width="5" height="70" rx="2" fill="#ffe6a0"/>
-    <rect x="171" y="-160" width="5" height="105" rx="2" fill="#b98b39"/>
-  </g>
-
-  <g fill="url(#metal)" opacity=".9">
-    <circle cx="180" cy="400" r="3"/>
-    <circle cx="290" cy="310" r="2"/>
-    <circle cx="920" cy="260" r="3"/>
-    <circle cx="1010" cy="540" r="2"/>
-    <circle cx="850" cy="1050" r="3"/>
-    <circle cx="350" cy="1280" r="3"/>
-    <circle cx="1000" cy="1280" r="2"/>
-    <circle cx="150" cy="950" r="2"/>
-  </g>
-
-  <path d="M0 1430 Q350 1310 620 1450 T1200 1390 L1200 1600 L0 1600Z" fill="#020611" opacity=".7"/>
+<!-- Dark lower vignette -->
+<path d="M0 1320 Q350 1190 650 1350 T1200 1270 L1200 1600 L0 1600Z"
+      fill="#020611" opacity=".85"/>
 </svg>
