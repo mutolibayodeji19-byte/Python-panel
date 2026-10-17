@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from flask import Blueprint, render_template, request, current_app
+from flask import Blueprint, render_template, request, current_app, abort
 from pathlib import Path
 from flask_login import login_required, current_user
 from sqlalchemy import func, case
@@ -235,3 +235,12 @@ def monitor_feed():
             for item in rows
         ]
     })
+
+
+@dashboard.route("/blacksite")
+@login_required
+def blacksite():
+    if not getattr(current_user, "is_admin", False):
+        abort(403)
+
+    return render_template("blacksite.html", user=current_user)

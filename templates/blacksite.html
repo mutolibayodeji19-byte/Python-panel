@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080b10">
+<title>BLACKSITE | PRIME ZENITH</title>
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:dark}
+body{margin:0;background:#080b10;color:#e5edf7;font:15px system-ui,Arial,sans-serif}
+header{padding:22px 18px;border-bottom:1px solid #263344;background:#0c121b}
+header h1{margin:0;font-size:23px;letter-spacing:2px;color:#67f7bd}
+header p,.muted{color:#92a4b9;font-size:13px}
+main{max-width:1050px;margin:auto;padding:18px}
+a{color:#67f7bd;text-decoration:none}
+button{background:#103d32;border:1px solid #287c62;color:#baffdf;padding:11px 15px;border-radius:8px;font-weight:700;cursor:pointer}
+button:active{transform:scale(.98)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:18px}
+.card{background:#101823;border:1px solid #263344;border-radius:12px;padding:17px;min-width:0}
+.card h2{font-size:16px;margin:0 0 12px}
+.value{font-size:19px;font-weight:700;overflow-wrap:anywhere}
+.status{color:#ffd479}
+pre,textarea,input{font:13px ui-monospace,monospace}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#070b10;border:1px solid #263344;border-radius:8px;padding:12px;min-height:55px;max-height:280px;overflow:auto}
+input{width:100%;padding:12px;background:#070b10;color:#e5edf7;border:1px solid #354457;border-radius:8px;margin:7px 0 12px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.full{grid-column:1/-1}
+footer{padding:24px 0;color:#92a4b9;font-size:12px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}main{padding:12px}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<header>
+  <h1>☠ BLACKSITE</h1>
+  <p>PRIME ZENITH SECURITY HQ · OWNER CONSOLE</p>
+  <a href="/">← Return to PRIME ZENITH</a>
+</header>
+<main>
+  <div class="card">
+    <div class="muted">OPERATOR</div>
+    <div class="value">{{ user.username }}</div>
+    <p class="muted">Restricted diagnostic workspace. Only verified results are displayed.</p>
+    <button id="refresh">↻ Run diagnostics</button>
+  </div>
+
+  <section class="grid">
+    <div class="card">
+      <h2>01 / Application</h2>
+      <div class="value status" id="app-status">Waiting for test</div>
+      <pre id="app-result">Not tested</pre>
+    </div>
+    <div class="card">
+      <h2>02 / Worker service</h2>
+      <div class="value status" id="worker-status">Waiting for test</div>
+      <pre id="worker-result">Not tested</pre>
+    </div>
+    <div class="card">
+      <h2>03 / API activity</h2>
+      <div class="value status" id="api-status">Waiting for test</div>
+      <pre id="api-result">Not tested</pre>
+    </div>
+    <div class="card">
+      <h2>04 / Security scope</h2>
+      <div class="value">Same-origin only</div>
+      <p class="muted">The request tester below only sends GET requests to this panel's own origin.</p>
+    </div>
+    <div class="card full">
+      <h2>05 / HTTP Request Lab</h2>
+      <label for="path">Relative path on this panel</label>
+      <input id="path" value="/version" maxlength="200" autocomplete="off">
+      <div class="row">
+        <button id="test">Send GET request</button>
+      </div>
+      <pre id="http-result">Ready. Example: /version</pre>
+    </div>
+    <div class="card full">
+      <h2>06 / Diagnostic log</h2>
+      <pre id="log">BLACKSITE initialized.
+No diagnostics have run yet.</pre>
+    </div>
+  </section>
+  <footer>BLACKSITE · Lightweight mode · No arbitrary shell execution enabled</footer>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const log = $('log');
+
+  function record(message) {
+    log.textContent = new Date().toISOString() + '  ' + message + '\\n' + log.textContent;
+    log.textContent = log.textContent.slice(0, 5000);
+  }
+
+  async function check(path, statusId, resultId) {
+    const status = $(statusId);
+    const result = $(resultId);
+    status.textContent = 'Testing...';
+    try {
+      const response = await fetch(path, {
+        method: 'GET',
+        cache: 'no-store',
+        credentials: 'same-origin',
+        headers: {'Accept': 'application/json'}
+      });
+      const body = await response.text();
+      status.textContent = response.ok ? 'RESPONDING · HTTP ' + response.status
+                                      : 'HTTP ' + response.status;
+      result.textContent = body.slice(0, 2500);
+      record(path + ' returned HTTP ' + response.status);
+    } catch (error) {
+      status.textContent = 'CHECK FAILED';
+      result.textContent = String(error);
+      record(path + ' failed');
+    }
+  }
+
+  $('refresh').addEventListener('click', () => {
+    check('/version', 'app-status', 'app-result');
+    check('/worker/status', 'worker-status', 'worker-result');
+    check('/monitor/feed', 'api-status', 'api-result');
+  });
+
+  $('test').addEventListener('click', async () => {
+    const path = $('path').value.trim();
+    const output = $('http-result');
+
+    if (!path.startsWith('/') || path.startsWith('//') ||
+        path.includes('\\') || /[\r\n]/.test(path)) {
+      output.textContent = 'Blocked: enter a relative path beginning with /';
+      return;
+    }
+
+    let target;
+    try {
+      target = new URL(path, window.location.origin);
+    } catch (_) {
+      output.textContent = 'Invalid path.';
+      return;
+    }
+
+    if (target.origin !== window.location.origin) {
+      output.textContent = 'Blocked: requests to other origins are not allowed.';
+      return;
+    }
+
+    output.textContent = 'Sending GET request...';
+
+    try {
+      const response = await fetch(target.pathname + target.search, {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: {'Accept': 'application/json, text/plain'}
+      });
+      const body = await response.text();
+      output.textContent = 'HTTP ' + response.status + '\\n' +
+        'Content-Type: ' + (response.headers.get('content-type') || 'unknown') +
+        '\\n\\n' + body.slice(0, 5000);
+      record('HTTP Lab: ' + target.pathname + ' → ' + response.status);
+    } catch (error) {
+      output.textContent = 'Request failed: ' + String(error);
+      record('HTTP Lab request failed');
+    }
+  });
+})();
+</script>
+</body>
+</html>
