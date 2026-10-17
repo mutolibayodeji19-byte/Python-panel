@@ -26,6 +26,11 @@ def daily_limit_for(user):
 
 
 @dashboard.route("/")
+def cancelled():
+    return render_template("project_cancelled.html")
+
+
+@dashboard.route("/dashboard")
 @login_required
 def home():
     # Keep the existing rolling 24-hour quota definition:
