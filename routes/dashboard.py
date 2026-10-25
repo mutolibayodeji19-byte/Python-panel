@@ -26,8 +26,9 @@ def daily_limit_for(user):
 
 
 @dashboard.route("/")
-def cancelled():
-    return render_template("project_cancelled.html")
+def index():
+    from flask import redirect, url_for
+    return redirect(url_for("dashboard.home"))
 
 
 @dashboard.route("/dashboard")
